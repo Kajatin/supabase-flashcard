@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useSupabase } from "../supabase-provider";
@@ -9,12 +9,16 @@ import { AnimatePresence, motion } from "framer-motion";
 
 export default function Login() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   const { supabase } = useSupabase();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loggingIn, setLoggingIn] = useState(false);
   const [error, setError] = useState(false);
+
+  const next = searchParams.get("next");
 
   const handleLogin = async (event: any) => {
     event.preventDefault();
@@ -36,7 +40,7 @@ export default function Login() {
     }
 
     setLoggingIn(false);
-    router.replace("/");
+    router.replace(next || "/");
   };
 
   useEffect(() => {
