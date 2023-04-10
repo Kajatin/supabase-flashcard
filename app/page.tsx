@@ -1,19 +1,16 @@
 "use client";
 
-import { useSupabase } from "./supabase-provider";
+import Collections from "./Collections";
+import Profile from "./Profile";
 
 export default function Home() {
-  const { supabase } = useSupabase();
-
-  const handleLogout = async (event: any) => {
-    event.preventDefault();
-    await supabase.auth.signOut();
-  };
-
   return (
-    <main>
-      <div>Hello World</div>
-      <button onClick={handleLogout}>Logout</button>
+    <main className="p-4 w-screen h-screen flex flex-row gap-4">
+      <div className="flex flex-col justify-between basis-1/5">
+        <Collections />
+        <Profile />
+      </div>
+      <div className="flex-1">Stuff</div>
     </main>
   );
 }

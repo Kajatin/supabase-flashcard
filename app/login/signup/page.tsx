@@ -29,12 +29,14 @@ export default function Signup() {
       password: password,
     });
 
+    setPassword("");
+
     if (error) {
       setError(true);
+    } else {
+      setShowVerifyEmail(true);
     }
 
-    setPassword("");
-    setShowVerifyEmail(true);
     setSigningUp(false);
   };
 
