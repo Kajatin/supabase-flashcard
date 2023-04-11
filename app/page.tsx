@@ -1,13 +1,20 @@
 "use client";
 
-import Collections from "./Collections";
+import { useState } from "react";
+import Collections, { Collection } from "./Collections";
 import Profile from "./Profile";
 
 export default function Home() {
+  const [selectedCollection, setSelectedCollection] =
+    useState<Collection | null>(null);
+
   return (
-    <main className="p-4 w-screen h-screen flex flex-row gap-4">
-      <div className="flex flex-col justify-between basis-1/5">
-        <Collections />
+    <main className="w-screen h-screen flex flex-row gap-2 p-2">
+      <div className="flex flex-col justify-between basis-1/5 overflow-auto">
+        <Collections
+          selectedCollection={selectedCollection}
+          setSelectedCollection={setSelectedCollection}
+        />
         <Profile />
       </div>
       <div className="flex-1">Stuff</div>

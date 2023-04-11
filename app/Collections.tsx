@@ -5,15 +5,24 @@ import { useSupabase } from "./supabase-provider";
 import { Database } from "@/types/supabase";
 import moment from "moment";
 import { Session } from "@supabase/supabase-js";
+import { AnimatePresence, motion } from "framer-motion";
 
-type Collections = Database["public"]["Tables"]["collections"]["Row"];
+export type Collection = Database["public"]["Tables"]["collections"]["Row"];
 
-export default function Collections() {
+export default function Collections(props: {
+  selectedCollection: Collection | null;
+  setSelectedCollection: (c: Collection | null) => void;
+}) {
+  const { selectedCollection, setSelectedCollection } = props;
+
   const { supabase } = useSupabase();
+
+  const [collectionTitle, setCollectionTitle] = useState("");
+  const [collectionDescription, setCollectionDescription] = useState("");
 
   const [session, setSession] = useState<Session | null>(null);
   const [showAddCollection, setShowAddCollection] = useState(false);
-  const [collections, setCollections] = useState<Collections[]>([]);
+  const [collections, setCollections] = useState<Collection[]>([]);
 
   useEffect(() => {
     const getSession = async () => {
@@ -45,8 +54,8 @@ export default function Collections() {
     const { data, error } = await supabase
       .from("collections")
       .insert({
-        title: "New collection",
-        description: "New description",
+        title: collectionTitle,
+        description: collectionDescription,
         user_id: session?.user.id || "",
       })
       .select("*")
@@ -62,30 +71,62 @@ export default function Collections() {
     fetchCollections();
   }, []);
 
+  useEffect(() => {
+    setCollectionTitle("");
+    setCollectionDescription("");
+  }, [showAddCollection]);
+
   return (
     <div className="flex flex-col p-2 rounded gap-2">
       <div className="text-lg font-medium">Collections</div>
 
-      {showAddCollection && (
-        <div className="flex flex-col gap-2">
-          <input
-            className="border border-neutral-400 rounded px-2 py-1"
-            placeholder="Title"
-          />
-          <input
-            className="border border-neutral-400 rounded px-2 py-1"
-            placeholder="Description"
-          />
-          <button
-            className="text-sm font-medium px-2 py-1 rounded border border-neutral-400 hover:bg-amber-400 hover:text-amber-900"
-            onClick={() => {
-              setShowAddCollection(false);
-            }}
+      <AnimatePresence>
+        {showAddCollection && (
+          <motion.div
+            className="flex flex-col gap-2"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
           >
-            Cancel
-          </button>
-        </div>
-      )}
+            <div className="flex flex-col items-start gap-2 mb-2">
+              <label className="text-sm font-medium text-neutral-400">
+                Title
+              </label>
+              <input
+                className="border rounded w-full py-1 px-1.5 dark:bg-neutral-900 outline-none"
+                type="text"
+                placeholder="Collection title"
+                onChange={(event) => setCollectionTitle(event.target.value)}
+                value={collectionTitle}
+              />
+            </div>
+
+            <div className="flex flex-col items-start gap-2 mb-2">
+              <label className="text-sm font-medium text-neutral-400">
+                Description
+              </label>
+              <input
+                className="border rounded w-full py-1 px-1.5 dark:bg-neutral-900 outline-none"
+                type="text"
+                placeholder="Collection description"
+                onChange={(event) =>
+                  setCollectionDescription(event.target.value)
+                }
+                value={collectionDescription}
+              />
+            </div>
+
+            <button
+              className="text-sm font-medium px-2 py-1 rounded border border-neutral-400 hover:bg-amber-400 hover:text-amber-900"
+              onClick={() => {
+                setShowAddCollection(false);
+              }}
+            >
+              Cancel
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <button
         className="text-sm font-medium px-2 py-1 rounded border border-neutral-400 hover:bg-amber-400 hover:text-amber-900"
@@ -101,16 +142,29 @@ export default function Collections() {
         {showAddCollection ? "Submit" : "Add new collection"}
       </button>
 
-      <div className="flex flex-col divide-y">
+      <div className="flex flex-col gap-1">
         {collections.map((collection) => (
-          <div key={collection.id} className="flex flex-col p-2">
+          <div
+            key={collection.id}
+            className={
+              "flex flex-col p-1 hover:bg-neutral-600 rounded " +
+              (selectedCollection === collection ? "bg-neutral-700" : "")
+            }
+            onClick={() => {
+              if (selectedCollection === collection) {
+                setSelectedCollection(null);
+              } else {
+                setSelectedCollection(collection);
+              }
+            }}
+          >
             <div className="">{collection.title}</div>
             <div
               key={collection.id}
-              className="flex flex-row gap-2 text-sm text-neutral-400"
+              className="flex flex-row gap-2 text-sm text-neutral-400 justify-between"
             >
-              <div className="">{collection.description}</div>
-              <div className="">
+              <div className="truncate basis-3/5">{collection.description}</div>
+              <div className="basis-2/5">
                 {moment(collection.updated_at).format("ll")}
               </div>
             </div>

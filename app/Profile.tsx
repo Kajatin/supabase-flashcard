@@ -33,7 +33,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="flex flex-col w-full py-5 gap-2 border-t border-neutral-400 items-start">
+    <div className="flex flex-col w-full px-2 py-5 gap-2 border-t border-neutral-400 items-start">
       <div className="text-sm text-neutral-400 font-medium">
         {profile?.username}
       </div>
