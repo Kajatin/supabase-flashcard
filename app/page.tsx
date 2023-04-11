@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Collections, { Collection } from "./Collections";
 import Profile from "./Profile";
+import Cards from "./Cards";
 
 export default function Home() {
   const [selectedCollection, setSelectedCollection] =
@@ -17,7 +18,9 @@ export default function Home() {
         />
         <Profile />
       </div>
-      <div className="flex-1">Stuff</div>
+      <div className="flex-1">
+        <Cards selectedCollection={selectedCollection} />
+      </div>
     </main>
   );
 }
