@@ -5,6 +5,7 @@ import { Collection } from "./Collections";
 import { useSupabase } from "../app/supabase-provider";
 import { Database } from "@/types/supabase";
 import { Session } from "@supabase/supabase-js";
+import { AnimatePresence, motion } from "framer-motion";
 
 type Card = Database["public"]["Tables"]["cards"]["Row"];
 
@@ -83,8 +84,39 @@ export default function Play(props: {
   }
 
   return (
-    <>
-      <div className="flex w-full h-full justify-center">
+    <AnimatePresence>
+      <motion.div
+        className="flex flex-col w-full h-full px-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.2 }}
+      >
+        <div className="flex flex-row justify-between items-center">
+          <div className="text-2xl">{selectedCollection.title}</div>
+          <button
+            className="text-sm text-neutral-400 hover:text-neutral-200 text-center"
+            onClick={() => {
+              setGame(false);
+            }}
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
         <div className="grid place-items-center h-full p-24">
           <div className="flex flex-col">
             <div className="flex flex-row justify-between mb-10 items-center">
@@ -171,7 +203,7 @@ export default function Play(props: {
             </div>
           </div>
         </div>
-      </div>
-    </>
+      </motion.div>
+    </AnimatePresence>
   );
 }
