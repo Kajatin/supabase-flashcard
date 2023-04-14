@@ -64,6 +64,26 @@ export interface Database {
           user_id?: string
         }
       }
+      feedback: {
+        Row: {
+          feedback: string
+          id: number
+          inserted_at: string
+          user_id: string | null
+        }
+        Insert: {
+          feedback: string
+          id?: number
+          inserted_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          feedback?: string
+          id?: number
+          inserted_at?: string
+          user_id?: string | null
+        }
+      }
       profiles: {
         Row: {
           full_name: string | null
