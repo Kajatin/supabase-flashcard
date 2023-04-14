@@ -95,15 +95,18 @@ export default function Profile() {
                   </div>
                 </div>
 
-                <button
-                  className="text-base font-medium hover:bg-neutral-600 text-red-500 w-full text-start bg-neutral-700 p-2 rounded"
-                  onClick={() => {
-                    localStorage.removeItem("openai-api-key");
-                    setOaAPI("");
-                  }}
-                >
-                  Reset settings
-                </button>
+                <div className="flex flex-col gap-2">
+                  <div className="text-base font-medium">System</div>
+                  <button
+                    className="text-base font-medium hover:bg-neutral-600 text-red-500 w-full text-start bg-neutral-700 p-2 rounded"
+                    onClick={() => {
+                      localStorage.removeItem("openai-api-key");
+                      setOaAPI("");
+                    }}
+                  >
+                    Reset settings
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>
@@ -115,13 +118,13 @@ export default function Profile() {
           {profile?.username}
         </div>
         <button
-          className="text-sm hover:bg-amber-500 w-full text-start px-1 py-0.5 rounded"
+          className="text-sm hover:bg-neutral-600 w-full text-start px-1 py-0.5 rounded"
           onClick={() => setShowSettings(true)}
         >
           Settings
         </button>
         <button
-          className="text-sm hover:bg-amber-500 w-full text-start px-1 py-0.5 rounded"
+          className="text-sm hover:bg-neutral-600 w-full text-start px-1 py-0.5 rounded"
           onClick={handleLogout}
         >
           Logout

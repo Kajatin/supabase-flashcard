@@ -167,7 +167,7 @@ export default function Collections(props: {
                   </div>
 
                   <button
-                    className="text-sm font-medium px-2 py-1 rounded border border-neutral-400 hover:bg-amber-400 hover:text-amber-900"
+                    className="text-base font-medium hover:bg-neutral-600 w-full text-center bg-neutral-700 p-2 rounded"
                     onClick={() => {
                       addNewCollection();
                       setShowAddCollection(false);
@@ -199,14 +199,8 @@ export default function Collections(props: {
             }}
           >
             <div className="">{collection.title}</div>
-            <div
-              key={collection.id}
-              className="flex flex-row gap-2 text-sm text-neutral-400 justify-between"
-            >
-              <div className="truncate basis-3/5">{collection.description}</div>
-              <div className="basis-2/5">
-                {moment(collection.updated_at).format("ll")}
-              </div>
+            <div className="text-sm text-neutral-400">
+              {collection.description}
             </div>
           </div>
         ))}

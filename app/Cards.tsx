@@ -172,7 +172,7 @@ export default function Profile(props: {
                   </div>
                 </div>
                 <button
-                  className="rounded-lg p-2 bg-gradient-to-br from-emerald-500 to-amber-500 text-neutral-800 font-medium opacity-70 hover:opacity-100"
+                  className="text-base font-medium hover:bg-neutral-600 w-full bg-neutral-700 text-center p-2 rounded"
                   onClick={() => {
                     addNewCard();
                     setShowAddCard(false);
