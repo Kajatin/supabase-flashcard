@@ -4,24 +4,38 @@
 
 :root {
   --foreground-rgb: 28, 28, 28;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --background-rgb: 214, 219, 220;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 227, 227, 227;
-    --background-start-rgb: 28, 28, 28;
-    --background-end-rgb: 0, 0, 0;
+    --foreground-rgb: 214, 219, 220;
+    --background-rgb: 28, 28, 28;
   }
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+.my-masonry-grid {
+  display: flex;
+  margin-left: -1.3rem;
+  width: auto;
+}
+
+.my-masonry-grid_column {
+  padding-left: 1.3rem;
+  background-clip: padding-box;
+}
+
+.my-masonry-grid_item {
+  margin-bottom: 1.3rem;
+  overflow: hidden;
+  transition: all .2s ease-in-out;
+}
+
+.my-masonry-grid_item:hover {
+  transform: translateY(-5px);
 }

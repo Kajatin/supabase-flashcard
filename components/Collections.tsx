@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSupabase } from "./supabase-provider";
+import { useSupabase } from "../app/supabase-provider";
 import { Database } from "@/types/supabase";
-import moment from "moment";
 import { Session } from "@supabase/supabase-js";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -77,7 +76,7 @@ export default function Collections(props: {
   }, [showAddCollection]);
 
   return (
-    <div className="flex flex-col p-2 rounded gap-2">
+    <div className="flex flex-col p-2 rounded gap-2 ">
       <div className="flex flex-row justify-between">
         <div className="text-lg font-medium">Collections</div>
         <button
@@ -115,7 +114,7 @@ export default function Collections(props: {
                 <div className="flex flex-row justify-between">
                   <div className="font-medium text-xl">New collection</div>
                   <button
-                    className="text-sm text-neutral-400 hover:text-neutral-200 text-center"
+                    className="text-neutral-400 hover:text-neutral-200 text-center"
                     onClick={() => setShowAddCollection(false)}
                   >
                     <svg
@@ -135,13 +134,13 @@ export default function Collections(props: {
                   </button>
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  <div className="flex flex-col items-start gap-2 mb-2">
+                <div className="flex flex-col gap-1">
+                  <div className="flex flex-col items-start gap-1 mb-2">
                     <label className="text-sm font-medium text-neutral-400">
                       Title
                     </label>
                     <input
-                      className="font-medium px-1.5 py-1 bg-transparent border rounded border-neutral-500 w-full"
+                      className="border border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
                       type="text"
                       placeholder="Collection title"
                       onChange={(event) =>
@@ -151,12 +150,12 @@ export default function Collections(props: {
                     />
                   </div>
 
-                  <div className="flex flex-col items-start gap-2 mb-2">
+                  <div className="flex flex-col items-start gap-1 mb-2">
                     <label className="text-sm font-medium text-neutral-400">
                       Description
                     </label>
                     <input
-                      className="font-medium px-1.5 py-1 bg-transparent border rounded border-neutral-500 w-full"
+                      className="border border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
                       type="text"
                       placeholder="Collection description"
                       onChange={(event) =>
@@ -187,8 +186,8 @@ export default function Collections(props: {
           <div
             key={collection.id}
             className={
-              "flex flex-col p-1 hover:bg-neutral-600 rounded " +
-              (selectedCollection === collection ? "bg-neutral-700" : "")
+              "flex flex-col p-1 hover:translate-x-1.5 hover:bg-neutral-800 bg-opacity-70 transition-all rounded " +
+              (selectedCollection === collection ? "bg-neutral-800" : "")
             }
             onClick={() => {
               if (selectedCollection === collection) {

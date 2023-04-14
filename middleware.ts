@@ -5,7 +5,7 @@ import type { NextRequest } from "next/server";
 import { Database } from "./types/supabase";
 
 export async function middleware(req: NextRequest) {
-  // We need to create a response and hand it to the supabase client to be able to modify the response headers.
+  // We need to create a response and hand it to the supabase client to be able to modify the response headers
   const res = NextResponse.next();
   // Create authenticated Supabase Client
   const supabase = createMiddlewareSupabaseClient<Database>({ req, res });

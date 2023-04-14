@@ -1,7 +1,7 @@
 "use client";
 
 import { Database } from "@/types/supabase";
-import { useSupabase } from "./supabase-provider";
+import { useSupabase } from "../app/supabase-provider";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -79,9 +79,11 @@ export default function Profile() {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <div className="text-base font-medium">OpenAI API Key</div>
+                  <label className="text-sm font-medium text-neutral-400">
+                    OpenAI API Key
+                  </label>
                   <input
-                    className="text-lg font-medium px-2 py-1 bg-transparent border rounded border-neutral-500"
+                    className="border border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
                     placeholder="sk-xxxxxxxxx"
                     value={oaAPI}
                     onChange={(e) => {
@@ -89,14 +91,16 @@ export default function Profile() {
                       localStorage.setItem("openai-api-key", e.target.value);
                     }}
                   />
-                  <div className="text-sm text-neutral-400">
+                  <div className="text-sm text-neutral-500 px-2">
                     Set your OpenAI API key to enable the AI to generate
                     description for new words that you add to your collections.
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <div className="text-base font-medium">System</div>
+                  <label className="text-sm font-medium text-neutral-400">
+                    System
+                  </label>
                   <button
                     className="text-base font-medium hover:bg-neutral-600 text-red-500 w-full text-start bg-neutral-700 p-2 rounded"
                     onClick={() => {
@@ -113,18 +117,19 @@ export default function Profile() {
         )}
       </AnimatePresence>
 
-      <div className="flex flex-col w-full px-2 py-5 gap-2 border-t border-neutral-400 items-start">
-        <div className="text-sm text-neutral-400 font-medium">
+      <div className="flex flex-col w-full px-2 py-5 items-start">
+        <div className="w-full border-t border-neutral-700 mb-1"></div>
+        <div className="text-sm text-neutral-400 font-medium my-1">
           {profile?.username}
         </div>
         <button
-          className="text-sm hover:bg-neutral-600 w-full text-start px-1 py-0.5 rounded"
+          className="text-sm hover:bg-neutral-800 bg-opacity-70 w-full text-start p-1 rounded"
           onClick={() => setShowSettings(true)}
         >
           Settings
         </button>
         <button
-          className="text-sm hover:bg-neutral-600 w-full text-start px-1 py-0.5 rounded"
+          className="text-sm hover:bg-neutral-800 bg-opacity-70 w-full text-start p-1 rounded"
           onClick={handleLogout}
         >
           Logout

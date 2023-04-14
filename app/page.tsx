@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Collections, { Collection } from "./Collections";
-import Profile from "./Profile";
-import Cards from "./Cards";
-import Play from "./Play";
+import Collections, { Collection } from "../components/Collections";
+import Profile from "../components/Profile";
+import Cards from "../components/Cards";
+import Play from "../components/Play";
 
 export default function Home() {
   const [selectedCollection, setSelectedCollection] =
@@ -17,7 +17,7 @@ export default function Home() {
 
   return (
     <main className="w-screen h-screen flex flex-row gap-2 p-2">
-      <div className="flex flex-col justify-between basis-1/5 overflow-auto overflow-y-auto bg-neutral-800 bg-opacity-50 rounded">
+      <div className="flex flex-col justify-between basis-1/5 overflow-auto overflow-y-auto border-r border-neutral-700">
         <Collections
           selectedCollection={selectedCollection}
           setSelectedCollection={setSelectedCollection}

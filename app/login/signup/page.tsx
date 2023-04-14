@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { useSupabase } from "../../supabase-provider";
 import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
 
 export default function Signup() {
   const { supabase } = useSupabase();
@@ -53,12 +54,20 @@ export default function Signup() {
   if (showVerifyEmail) {
     return (
       <div className="flex justify-center items-center w-screen h-screen">
-        <div className="flex flex-col justify-center items-center text-center border max-w-md rounded border-gray-500 px-6 py-10">
+        <div className="flex flex-col justify-center items-center text-center border max-w-md rounded border-gray-500 bg-neutral-800 px-6 py-10">
           <div className="text-3xl">Thank you</div>
-          <div className="mt-8 text-neutral-400">
+          <div className="mt-6 text-neutral-400 text-lg">
             Welcome to Flashcards. Please check your inbox at{" "}
-            <span className="text-amber-500 font-medium text-sm">{email}</span>{" "}
+            <span className="text-amber-500 font-medium text-base">
+              {email}
+            </span>{" "}
             to verify your account.
+          </div>
+          <div className="text-base mt-2 font-medium text-neutral-400">
+            Return to{" "}
+            <Link href="/login" className="text-amber-500 hover:underline">
+              login
+            </Link>
           </div>
         </div>
       </div>
@@ -67,19 +76,18 @@ export default function Signup() {
 
   return (
     <div className="flex justify-center items-center w-screen h-screen">
-      <div className="flex flex-col justify-center items-center text-center border max-w-md rounded border-gray-500 px-6 py-10">
+      <div className="flex flex-col justify-center items-center text-center border max-w-md rounded border-gray-500 bg-neutral-800 px-6 py-10">
         <div className="text-3xl">Welcome</div>
-        <div className="mt-8 text-neutral-400">
-          Learn new languages with the help of language models.
+        <div className="my-6 text-neutral-400 text-lg">
+          Learn new languages with the help of language models
         </div>
-
-        <div className="mt-8 flex flex-col w-full gap-4">
+        <div className="flex flex-col w-full gap-4">
           <div className="flex flex-col items-start gap-2">
             <label className="text-sm font-medium text-neutral-400">
               Email
             </label>
             <input
-              className="border rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
+              className="border border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
               type="email"
               placeholder="Email"
               onChange={(event) => setEmail(event.target.value)}
@@ -92,7 +100,7 @@ export default function Signup() {
               Password
             </label>
             <input
-              className="border rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
+              className="border border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
               type="password"
               placeholder="Password"
               onChange={(event) => setPassword(event.target.value)}
@@ -115,8 +123,8 @@ export default function Signup() {
 
           <button
             className={
-              "bg-amber-500 text-white font-medium py-2 px-4 rounded flex justify-center " +
-              (signingUp ? "cursor-not-allowed" : "hover:bg-amber-700")
+              "bg-gradient-to-r from-amber-500 to-indigo-500 text-white font-medium py-2 px-4 rounded flex justify-center " +
+              (signingUp ? "cursor-not-allowed" : "")
             }
             onClick={handleSignup}
             disabled={signingUp}

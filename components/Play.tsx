@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Collection } from "./Collections";
-import { useSupabase } from "./supabase-provider";
+import { useSupabase } from "../app/supabase-provider";
 import { Database } from "@/types/supabase";
 import { Session } from "@supabase/supabase-js";
 
@@ -12,7 +12,7 @@ function Card(props: { card: Card }) {
   const { card } = props;
 
   return (
-    <div className="rounded-lg p-0.5 bg-gradient-to-br from-emerald-500 to-amber-500">
+    <div className="rounded-lg p-0.5 bg-gradient-to-br from-amber-500 to-indigo-500">
       <div className="flex flex-col gap-2 p-4 bg-neutral-800 rounded-lg">
         <div className="text-xl font-medium text-center">{card.content}</div>
         <div className="text-sm text-neutral-400 text-center">
@@ -149,8 +149,10 @@ export default function Play(props: {
               </button>
             </div>
 
-            <div className="flex flex-col justify-center items-center gap-4 bg-gradient-to-br from-emerald-500 to-amber-500 p-4 pt-8 pb-4 rounded-2xl">
-              <div className="text-5xl">{cards[cardIdxToShow].content}</div>
+            <div className="flex flex-col justify-center items-center gap-4 bg-gradient-to-br from-amber-500 to-indigo-500 p-4 pt-8 pb-4 rounded-2xl">
+              <div className="text-5xl font-medium text-center border bg-neutral-900 bg-opacity-50 rounded-lg border-neutral-600 px-3">
+                {cards[cardIdxToShow].content}
+              </div>
               <div
                 className="bg-neutral-500 bg-opacity-40 rounded-xl px-4 py-2 cursor-pointer"
                 onClick={() => {

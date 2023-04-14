@@ -55,10 +55,10 @@ export default function Login() {
 
   return (
     <div className="flex justify-center items-center w-screen h-screen">
-      <div className="flex flex-col justify-center items-center text-center border max-w-md rounded border-gray-500 px-6 py-10">
+      <div className="flex flex-col justify-center items-center text-center border max-w-md rounded border-gray-500 bg-neutral-800 px-6 py-10">
         <div className="text-3xl">Welcome</div>
-        <div className="my-8 text-neutral-400">
-          Log in to continue learning new languages.
+        <div className="my-6 text-neutral-400 text-lg">
+          Log in to continue learning new languages
         </div>
 
         <div className="flex flex-col w-full gap-4">
@@ -67,7 +67,7 @@ export default function Login() {
               Email
             </label>
             <input
-              className="border rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
+              className="border border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
               type="email"
               placeholder="Email"
               onChange={(event) => setEmail(event.target.value)}
@@ -80,7 +80,7 @@ export default function Login() {
               Password
             </label>
             <input
-              className="border rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
+              className="border border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
               type="password"
               placeholder="Password"
               onChange={(event) => setPassword(event.target.value)}
@@ -103,8 +103,8 @@ export default function Login() {
 
           <button
             className={
-              "bg-amber-500 text-white font-medium py-2 px-4 rounded flex justify-center " +
-              (loggingIn ? "cursor-not-allowed" : "hover:bg-amber-700")
+              "bg-gradient-to-r from-amber-500 to-indigo-500 text-white font-medium py-2 px-4 rounded flex justify-center " +
+              (loggingIn ? "cursor-not-allowed" : "")
             }
             onClick={handleLogin}
             disabled={loggingIn}
