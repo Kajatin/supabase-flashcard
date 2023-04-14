@@ -45,6 +45,7 @@ export default function Cards(props: {
   const [newExplanation, setNewExplanation] = useState("");
   const [language, setLanguage] = useState("Danish");
   const [generating, setGenerating] = useState(false);
+  const maxCards = 20;
 
   useEffect(() => {
     const lang = localStorage.getItem("language");
@@ -99,21 +100,21 @@ export default function Cards(props: {
       return;
     }
 
-    const { data, error } = await supabase
-      .from("cards")
-      .insert({
+    await fetch("/api/cards", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
         content: newContent,
         explanation: newExplanation,
         collection_id: selectedCollection.id,
         user_id: session?.user.id || "",
-      })
-      .select("*")
-      .single();
-    if (error) {
-      console.log(error);
-    } else {
-      setCards([...cards, data]);
-    }
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => setCards([...cards, data]))
+      .catch((err) => console.log(err));
   };
 
   useEffect(() => {
@@ -229,13 +230,25 @@ export default function Cards(props: {
                   </div>
                 </div>
                 <button
-                  className="text-base font-medium hover:bg-neutral-600 w-full bg-neutral-700 text-center p-2 rounded"
+                  className={
+                    "text-base font-medium w-full bg-neutral-700 text-center p-2 rounded " +
+                    (cards.length >= maxCards
+                      ? "cursor-not-allowed opacity-60"
+                      : "hover:bg-neutral-600")
+                  }
+                  disabled={cards.length >= maxCards}
                   onClick={() => {
+                    if (cards.length >= maxCards) {
+                      return;
+                    }
+
                     addNewCard();
                     setShowAddCard(false);
                   }}
                 >
-                  Add
+                  {cards.length >= maxCards
+                    ? "Max cards reached (" + maxCards + ")"
+                    : "Add"}
                 </button>
               </div>
             </motion.div>

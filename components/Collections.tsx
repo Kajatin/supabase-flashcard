@@ -23,6 +23,8 @@ export default function Collections(props: {
   const [showAddCollection, setShowAddCollection] = useState(false);
   const [collections, setCollections] = useState<Collection[]>([]);
 
+  const maxCollections = 3;
+
   useEffect(() => {
     const getSession = async () => {
       const {
@@ -50,20 +52,20 @@ export default function Collections(props: {
   };
 
   const addNewCollection = async () => {
-    const { data, error } = await supabase
-      .from("collections")
-      .insert({
+    await fetch("/api/collections", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
         title: collectionTitle,
         description: collectionDescription,
         user_id: session?.user.id || "",
-      })
-      .select("*")
-      .single();
-    if (error) {
-      console.log(error);
-    } else {
-      setCollections([...collections, data]);
-    }
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => setCollections([...collections, data]))
+      .catch((err) => console.log(err));
   };
 
   useEffect(() => {
@@ -76,7 +78,7 @@ export default function Collections(props: {
   }, [showAddCollection]);
 
   return (
-    <div className="flex flex-col p-2 rounded gap-2 ">
+    <div className="flex flex-col p-2 rounded gap-2 overflow-auto overflow-y-auto ">
       <div className="flex flex-row justify-between">
         <div className="text-lg font-medium">Collections</div>
         <button
@@ -166,13 +168,25 @@ export default function Collections(props: {
                   </div>
 
                   <button
-                    className="text-base font-medium hover:bg-neutral-600 w-full text-center bg-neutral-700 p-2 rounded"
+                    className={
+                      "text-base font-medium w-full text-center bg-neutral-700 p-2 rounded " +
+                      (collections.length >= maxCollections
+                        ? "cursor-not-allowed opacity-60"
+                        : "hover:bg-neutral-600")
+                    }
+                    disabled={collections.length >= maxCollections}
                     onClick={() => {
+                      if (collections.length >= maxCollections) {
+                        return;
+                      }
+
                       addNewCollection();
                       setShowAddCollection(false);
                     }}
                   >
-                    Add
+                    {collections.length >= maxCollections
+                      ? "Max collections reached (" + maxCollections + ")"
+                      : "Add"}
                   </button>
                 </div>
               </div>

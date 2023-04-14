@@ -17,7 +17,7 @@ export default function Home() {
 
   return (
     <main className="w-screen h-screen flex flex-row gap-2 p-2">
-      <div className="flex flex-col justify-between basis-1/5 overflow-auto overflow-y-auto border-r border-neutral-700">
+      <div className="flex flex-col justify-between basis-1/5 border-r border-neutral-700">
         <Collections
           selectedCollection={selectedCollection}
           setSelectedCollection={setSelectedCollection}
