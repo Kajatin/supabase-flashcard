@@ -206,7 +206,7 @@ export default function Profile() {
                 </div>
 
                 <textarea
-                  className="text-base text-neutral-400 text-justify h-56 px-2 py-1 bg-transparent border rounded-lg border-neutral-600 outline-none resize-none"
+                  className="text-base text-justify h-56 px-2 py-1 bg-transparent border rounded-lg border-neutral-600 outline-none resize-none"
                   placeholder="Leave me some feedback!"
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
