@@ -6,7 +6,7 @@ import { useSupabase } from "../app/supabase-provider";
 import { Database } from "@/types/supabase";
 import { Session } from "@supabase/supabase-js";
 import { AnimatePresence, motion } from "framer-motion";
-import { generatePrompt, generateText } from "@/utils/openai-helpers";
+import { generatePrompt } from "@/utils/openai-helpers";
 import Masonry from "react-masonry-css";
 
 type Card = Database["public"]["Tables"]["cards"]["Row"];
@@ -43,6 +43,15 @@ export default function Cards(props: {
   const [showAddCard, setShowAddCard] = useState(false);
   const [newContent, setNewContent] = useState("");
   const [newExplanation, setNewExplanation] = useState("");
+  const [language, setLanguage] = useState("Danish");
+  const [generating, setGenerating] = useState(false);
+
+  useEffect(() => {
+    const lang = localStorage.getItem("language");
+    if (lang) {
+      setLanguage(lang);
+    }
+  }, []);
 
   useEffect(() => {
     const getSession = async () => {
@@ -153,18 +162,41 @@ export default function Cards(props: {
                   <button
                     className={
                       "px-2 py-1 bg-neutral-600 bg-opacity-50 rounded-lg m-1 " +
-                      (newContent
+                      (newContent && !generating
                         ? "hover:bg-opacity-70"
                         : "cursor-not-allowed")
                     }
+                    disabled={generating || !newContent}
                     onClick={async () => {
-                      const resp = await generateText(
-                        generatePrompt(newContent)
-                      );
+                      if (generating) {
+                        return;
+                      }
+
+                      setGenerating(true);
+
+                      const lang = localStorage.getItem("language");
+                      if (lang) {
+                        setLanguage(lang);
+                      }
+
+                      const prompt = generatePrompt(newContent, language);
+                      const resp = await fetch("/api/openai", {
+                        method: "POST",
+                        body: JSON.stringify({ prompt }),
+                      })
+                        .then((res) => res.text())
+                        .catch((err) => console.log(err));
+
+                      setGenerating(false);
                       setNewExplanation(resp || "");
                     }}
                   >
-                    <div className="flex flex-row gap-2.5 items-center">
+                    <div
+                      className={
+                        "flex flex-row gap-2.5 items-center " +
+                        (generating ? "animate-pulse" : "")
+                      }
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         height="20"
@@ -174,7 +206,9 @@ export default function Cards(props: {
                       >
                         <path d="m812 353-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75Zm-482 0-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75Zm482 482-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75ZM187 964l-95-95q-11-11-12-25.5T92 816l450-450q12-12 29-12t29 12l90 90q12 12 12 29t-12 29L240 964q-12 12-26.5 12T187 964Zm23-57 313-313-62-62-313 313 62 62Z" />
                       </svg>
-                      <div>Generate explanation</div>
+                      <div>
+                        {generating ? "Generating..." : "Generate explanation"}
+                      </div>
                     </div>
                   </button>
 

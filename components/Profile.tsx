@@ -5,6 +5,7 @@ import { useSupabase } from "../app/supabase-provider";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Session } from "@supabase/supabase-js";
+import Cookies from "js-cookie";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
@@ -17,6 +18,7 @@ export default function Profile() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [oaAPI, setOaAPI] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [language, setLanguage] = useState("Danish");
 
   const fetchCollections = async () => {
     const { data: profiles, error } = await supabase
@@ -29,6 +31,13 @@ export default function Profile() {
       setProfile(profiles);
     }
   };
+
+  useEffect(() => {
+    const lang = localStorage.getItem("language");
+    if (lang) {
+      setLanguage(lang);
+    }
+  }, []);
 
   useEffect(() => {
     const getSession = async () => {
@@ -52,7 +61,7 @@ export default function Profile() {
   }, []);
 
   useEffect(() => {
-    const oaAPIKey = localStorage.getItem("openai-api-key");
+    const oaAPIKey = Cookies.get("openai-api-key");
     if (oaAPIKey) {
       setOaAPI(oaAPIKey);
     }
@@ -109,7 +118,29 @@ export default function Profile() {
                     value={oaAPI}
                     onChange={(e) => {
                       setOaAPI(e.target.value);
-                      localStorage.setItem("openai-api-key", e.target.value);
+                      Cookies.set("openai-api-key", e.target.value, {
+                        expires: 1,
+                        path: "/",
+                      });
+                    }}
+                  />
+                  <div className="text-sm text-neutral-500 px-2">
+                    Set your OpenAI API key to enable the AI to generate
+                    description for new words that you add to your collections.
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-neutral-400">
+                    Language
+                  </label>
+                  <input
+                    className="border border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
+                    placeholder="Danish"
+                    value={language}
+                    onChange={(e) => {
+                      setLanguage(e.target.value);
+                      localStorage.setItem("language", e.target.value);
                     }}
                   />
                   <div className="text-sm text-neutral-500 px-2">
@@ -125,8 +156,10 @@ export default function Profile() {
                   <button
                     className="text-base font-medium hover:bg-neutral-600 text-red-500 w-full text-start bg-neutral-700 p-2 rounded"
                     onClick={() => {
-                      localStorage.removeItem("openai-api-key");
+                      Cookies.remove("openai-api-key");
                       setOaAPI("");
+                      localStorage.removeItem("language");
+                      setLanguage("Danish");
                     }}
                   >
                     Reset settings
