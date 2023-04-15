@@ -130,8 +130,8 @@ export default function Profile() {
                     }}
                   />
                   <div className="text-sm text-neutral-400 dark:text-neutral-500 px-2">
-                    Set your OpenAI API key to enable the AI to generate
-                    description for new words that you add to your collections.
+                    Set the language to enable the AI to generate description
+                    for new words that you add to your collections.
                   </div>
                 </div>
 
