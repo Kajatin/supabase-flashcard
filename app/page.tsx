@@ -7,9 +7,18 @@ import Cards from "../components/Cards";
 import Play from "../components/Play";
 
 export default function Home() {
+  const [collections, setCollections] = useState<Collection[]>([]);
   const [selectedCollection, setSelectedCollection] =
     useState<Collection | null>(null);
   const [game, setGame] = useState(false);
+
+  const removeCollection = (id: number) => {
+    const newCollections = collections.filter(
+      (collection) => collection.id !== id
+    );
+    setSelectedCollection(null);
+    setCollections(newCollections);
+  };
 
   useEffect(() => {
     setGame(false);
@@ -19,6 +28,8 @@ export default function Home() {
     <main className="w-screen h-screen flex flex-row gap-2 p-2">
       <div className="flex flex-col justify-between basis-1/5 border-r border-neutral-700">
         <Collections
+          collections={collections}
+          setCollections={setCollections}
           selectedCollection={selectedCollection}
           setSelectedCollection={setSelectedCollection}
         />
@@ -28,7 +39,11 @@ export default function Home() {
         {game ? (
           <Play selectedCollection={selectedCollection} setGame={setGame} />
         ) : (
-          <Cards selectedCollection={selectedCollection} setGame={setGame} />
+          <Cards
+            selectedCollection={selectedCollection}
+            setGame={setGame}
+            removeCollection={removeCollection}
+          />
         )}
       </div>
     </main>

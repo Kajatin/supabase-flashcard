@@ -3,44 +3,33 @@
 import { useEffect, useState } from "react";
 import { useSupabase } from "../app/supabase-provider";
 import { Database } from "@/types/supabase";
-import { Session } from "@supabase/supabase-js";
 import { AnimatePresence, motion } from "framer-motion";
+import { useSession } from "@/utils/use-session";
 
 export type Collection = Database["public"]["Tables"]["collections"]["Row"];
 
 export default function Collections(props: {
+  collections: Collection[];
+  setCollections: (c: Collection[]) => void;
   selectedCollection: Collection | null;
   setSelectedCollection: (c: Collection | null) => void;
 }) {
-  const { selectedCollection, setSelectedCollection } = props;
+  const {
+    collections,
+    setCollections,
+    selectedCollection,
+    setSelectedCollection,
+  } = props;
 
   const { supabase } = useSupabase();
 
   const [collectionTitle, setCollectionTitle] = useState("");
   const [collectionDescription, setCollectionDescription] = useState("");
 
-  const [session, setSession] = useState<Session | null>(null);
+  const session = useSession();
   const [showAddCollection, setShowAddCollection] = useState(false);
-  const [collections, setCollections] = useState<Collection[]>([]);
 
   const maxCollections = 3;
-
-  useEffect(() => {
-    const getSession = async () => {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
-
-      if (error) {
-        console.log(error);
-      } else {
-        setSession(session);
-      }
-    };
-
-    getSession();
-  }, []);
 
   const fetchCollections = async () => {
     const { data, error } = await supabase.from("collections").select("*");
@@ -104,7 +93,7 @@ export default function Collections(props: {
 
       <AnimatePresence>
         {showAddCollection && (
-          <div className="absolute top-0 left-0 w-screen h-screen bg-neutral-600 dark:bg-neutral-900 bg-opacity-70">
+          <div className="absolute top-0 left-0 w-screen h-screen bg-neutral-600 dark:bg-neutral-900 bg-opacity-70 dark:bg-opacity-70">
             <motion.div
               className="grid place-items-center h-screen"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -200,9 +189,9 @@ export default function Collections(props: {
           <div
             key={collection.id}
             className={
-              "flex flex-col p-1 hover:translate-x-1.5 hover:bg-neutral-400 hover:bg-opacity-30 dark:hover:bg-opacity-100 dark:hover:bg-neutral-800 bg-opacity-70 transition-all rounded " +
+              "flex flex-col p-1 hover:translate-x-1.5 hover:bg-neutral-400 hover:bg-opacity-30 dark:hover:bg-opacity-100 dark:hover:bg-neutral-800 bg-opacity-70 dark:bg-opacity-70 transition-all rounded " +
               (selectedCollection === collection
-                ? "bg-neutral-400 bg-opacity-30"
+                ? "bg-neutral-400 bg-opacity-20 dark:bg-neutral-800"
                 : "")
             }
             onClick={() => {

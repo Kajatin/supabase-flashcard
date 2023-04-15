@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { Collection } from "./Collections";
 import { useSupabase } from "../app/supabase-provider";
 import { Database } from "@/types/supabase";
-import { Session } from "@supabase/supabase-js";
 import { AnimatePresence, motion } from "framer-motion";
+import { useSession } from "@/utils/use-session";
 
 type Card = Database["public"]["Tables"]["cards"]["Row"];
 
@@ -31,27 +31,10 @@ export default function Play(props: {
   const { supabase } = useSupabase();
   const { selectedCollection, setGame } = props;
 
+  const session = useSession();
   const [cards, setCards] = useState<Card[]>([]);
-  const [session, setSession] = useState<Session | null>(null);
   const [cardIdxToShow, setCardIdxToShow] = useState(0);
   const [isBlurred, setIsBlurred] = useState(true);
-
-  useEffect(() => {
-    const getSession = async () => {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
-
-      if (error) {
-        console.log(error);
-      } else {
-        setSession(session);
-      }
-    };
-
-    getSession();
-  }, []);
 
   useEffect(() => {
     if (!selectedCollection) {

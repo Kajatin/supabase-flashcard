@@ -4,14 +4,14 @@ import { Database } from "@/types/supabase";
 import { useSupabase } from "../app/supabase-provider";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Session } from "@supabase/supabase-js";
 import Cookies from "js-cookie";
+import { useSession } from "@/utils/use-session";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
 export default function Profile() {
   const { supabase } = useSupabase();
-  const [session, setSession] = useState<Session | null>(null);
+  const session = useSession();
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [showSettings, setShowSettings] = useState(false);
@@ -40,23 +40,6 @@ export default function Profile() {
   }, []);
 
   useEffect(() => {
-    const getSession = async () => {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
-
-      if (error) {
-        console.log(error);
-      } else {
-        setSession(session);
-      }
-    };
-
-    getSession();
-  }, []);
-
-  useEffect(() => {
     fetchCollections();
   }, []);
 
@@ -76,7 +59,7 @@ export default function Profile() {
     <>
       <AnimatePresence>
         {showSettings && (
-          <div className="absolute top-0 left-0 w-screen h-screen bg-neutral-600 dark:bg-neutral-900 bg-opacity-70">
+          <div className="absolute top-0 left-0 w-screen h-screen bg-neutral-600 dark:bg-neutral-900 bg-opacity-70 dark:bg-opacity-70">
             <motion.div
               className="grid place-items-center h-screen"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -173,7 +156,7 @@ export default function Profile() {
 
       <AnimatePresence>
         {showFeedback && (
-          <div className="absolute top-0 left-0 w-screen h-screen bg-neutral-600 dark:bg-neutral-900 bg-opacity-70">
+          <div className="absolute top-0 left-0 w-screen h-screen bg-neutral-600 dark:bg-neutral-900 bg-opacity-70 dark:bg-opacity-70">
             <motion.div
               className="grid place-items-center h-screen"
               initial={{ opacity: 0, scale: 0.9 }}

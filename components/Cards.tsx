@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { Collection } from "./Collections";
 import { useSupabase } from "../app/supabase-provider";
 import { Database } from "@/types/supabase";
-import { Session } from "@supabase/supabase-js";
 import { AnimatePresence, motion } from "framer-motion";
 import { generatePrompt } from "@/utils/openai-helpers";
 import Masonry from "react-masonry-css";
+import { useSession } from "@/utils/use-session";
 
 type Card = Database["public"]["Tables"]["cards"]["Row"];
 
@@ -33,14 +33,16 @@ function Card(props: { card: Card }) {
 export default function Cards(props: {
   selectedCollection: Collection | null;
   setGame: (game: boolean) => void;
+  removeCollection: (id: number) => void;
 }) {
   const { supabase } = useSupabase();
-  const { selectedCollection, setGame } = props;
+  const { selectedCollection, setGame, removeCollection } = props;
 
   const [cards, setCards] = useState<Card[]>([]);
-  const [session, setSession] = useState<Session | null>(null);
+  const session = useSession();
 
   const [showAddCard, setShowAddCard] = useState(false);
+  const [showErase, setShowErase] = useState(false);
   const [newContent, setNewContent] = useState("");
   const [newExplanation, setNewExplanation] = useState("");
   const [language, setLanguage] = useState("Danish");
@@ -55,24 +57,8 @@ export default function Cards(props: {
   }, []);
 
   useEffect(() => {
-    const getSession = async () => {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
-
-      if (error) {
-        console.log(error);
-      } else {
-        setSession(session);
-      }
-    };
-
-    getSession();
-  }, []);
-
-  useEffect(() => {
     if (!selectedCollection) {
+      setCards([]);
       return;
     }
 
@@ -117,6 +103,19 @@ export default function Cards(props: {
       .catch((err) => console.log(err));
   };
 
+  const eraseCollection = async () => {
+    if (!selectedCollection) {
+      return;
+    }
+
+    await fetch(`/api/collections/${selectedCollection.id}`, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .then((data) => removeCollection(data[0].id))
+      .catch((err) => console.log(err));
+  };
+
   useEffect(() => {
     if (!showAddCard) {
       setNewContent("");
@@ -128,7 +127,7 @@ export default function Cards(props: {
     <>
       <AnimatePresence>
         {showAddCard && (
-          <div className="absolute top-0 left-0 w-screen h-screen bg-neutral-600 dark:bg-neutral-900 bg-opacity-70">
+          <div className="absolute top-0 left-0 w-screen h-screen bg-neutral-600 dark:bg-neutral-900 bg-opacity-70 dark:bg-opacity-70">
             <motion.div
               className="grid place-items-center h-screen"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -257,6 +256,90 @@ export default function Cards(props: {
       </AnimatePresence>
 
       <AnimatePresence>
+        {showErase && (
+          <div className="absolute top-0 left-0 w-screen h-screen bg-neutral-600 dark:bg-neutral-900 bg-opacity-70 dark:bg-opacity-70">
+            <motion.div
+              className="grid place-items-center h-screen"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex flex-col gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-800 p-4 w-[50%]">
+                <div className="flex flex-row justify-between">
+                  <div className="font-medium text-xl">Erase collection</div>
+                  <button
+                    className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
+                    onClick={() => setShowErase(false)}
+                  >
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="text-lg text-neutral-500 dark:text-neutral-400">
+                  Are you sure you want to erase{" "}
+                  <span className="font-medium text-amber-500">
+                    {selectedCollection?.title}
+                  </span>
+                  ? All cards for this collection will be removed too.
+                </div>
+                <div className="flex flex-row items-center gap-2 text-lg text-neutral-500 dark:text-neutral-400 font-medium">
+                  <svg
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                    className="w-6 h-6"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+                    />
+                  </svg>
+                  <div>This action cannot be undone.</div>
+                </div>
+
+                <button
+                  className={
+                    "text-base font-medium w-full text-center bg-neutral-300 dark:bg-neutral-700 p-2 rounded " +
+                    (!selectedCollection
+                      ? "cursor-not-allowed opacity-60"
+                      : "hover:bg-neutral-400 dark:hover:bg-neutral-600")
+                  }
+                  disabled={!selectedCollection}
+                  onClick={() => {
+                    if (!selectedCollection) {
+                      return;
+                    }
+
+                    eraseCollection();
+                    setShowErase(false);
+                  }}
+                >
+                  Erase
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
         {selectedCollection && (
           <motion.div
             className="flex flex-col px-10 gap-4"
@@ -268,6 +351,28 @@ export default function Cards(props: {
             <div className="flex flex-row justify-between items-center">
               <div className="text-2xl">{selectedCollection.title}</div>
               <div className="flex flex-row gap-2">
+                <button
+                  className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
+                  onClick={() => {
+                    setShowErase(true);
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                    />
+                  </svg>
+                </button>
+
                 <button
                   className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
                   onClick={() => {
@@ -289,6 +394,7 @@ export default function Cards(props: {
                     />
                   </svg>
                 </button>
+
                 <button
                   className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
                   onClick={() => {
