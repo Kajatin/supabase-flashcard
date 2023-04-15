@@ -31,15 +31,6 @@ export default function Collections(props: {
 
   const maxCollections = 3;
 
-  const fetchCollections = async () => {
-    const { data, error } = await supabase.from("collections").select("*");
-    if (error) {
-      console.log(error);
-    } else {
-      setCollections(data);
-    }
-  };
-
   const addNewCollection = async () => {
     await fetch("/api/collections", {
       method: "POST",
@@ -58,8 +49,17 @@ export default function Collections(props: {
   };
 
   useEffect(() => {
+    const fetchCollections = async () => {
+      const { data, error } = await supabase.from("collections").select("*");
+      if (error) {
+        console.log(error);
+      } else {
+        setCollections(data);
+      }
+    };
+
     fetchCollections();
-  }, []);
+  }, [supabase, setCollections]);
 
   useEffect(() => {
     setCollectionTitle("");

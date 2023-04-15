@@ -21,18 +21,6 @@ export default function Profile() {
   const [feedback, setFeedback] = useState("");
   const [language, setLanguage] = useState("Danish");
 
-  const fetchCollections = async () => {
-    const { data: profiles, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .single();
-    if (error) {
-      console.log(error);
-    } else {
-      setProfile(profiles);
-    }
-  };
-
   useEffect(() => {
     const lang = localStorage.getItem("language");
     if (lang) {
@@ -41,8 +29,20 @@ export default function Profile() {
   }, []);
 
   useEffect(() => {
+    const fetchCollections = async () => {
+      const { data: profiles, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .single();
+      if (error) {
+        console.log(error);
+      } else {
+        setProfile(profiles);
+      }
+    };
+
     fetchCollections();
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
     const oaAPIKey = Cookies.get("openai-api-key");

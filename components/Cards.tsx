@@ -75,7 +75,7 @@ export default function Cards(props: {
     };
 
     fetchCards();
-  }, [selectedCollection]);
+  }, [selectedCollection, supabase]);
 
   const addNewCard = async () => {
     if (!selectedCollection) {

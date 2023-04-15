@@ -60,7 +60,7 @@ export default function Play(props: {
     };
 
     fetchCards();
-  }, [selectedCollection]);
+  }, [selectedCollection, supabase]);
 
   if (!session || !selectedCollection || !cards.length) {
     return null;

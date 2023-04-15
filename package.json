@@ -32,6 +32,7 @@
     "typescript": "5.0.4"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.3",
     "supabase": "^1.50.1"
   }
 }
