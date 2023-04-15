@@ -20,6 +20,8 @@ export default function Profile() {
   const [oaAPI, setOaAPI] = useState("");
   const [feedback, setFeedback] = useState("");
   const [language, setLanguage] = useState("Danish");
+  const [sendingReset, setSendingReset] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   useEffect(() => {
     const lang = localStorage.getItem("language");
@@ -133,10 +135,48 @@ export default function Profile() {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
-                    System
-                  </label>
+                <div className="flex flex-col gap-1">
+                  <button
+                    className={
+                      "text-base font-medium w-full text-start bg-neutral-300 dark:bg-neutral-700 p-2 rounded " +
+                      (sendingReset || resetSent
+                        ? "cursor-not-allowed"
+                        : "hover:bg-neutral-400 dark:hover:bg-neutral-600")
+                    }
+                    disabled={resetSent}
+                    onClick={async () => {
+                      if (resetSent) {
+                        return;
+                      }
+
+                      if (!session?.user?.email) {
+                        return;
+                      }
+
+                      setSendingReset(true);
+
+                      const { data, error } =
+                        await supabase.auth.resetPasswordForEmail(
+                          session?.user?.email || ""
+                        );
+
+                      if (error) {
+                        console.log(error);
+                      } else {
+                        setResetSent(true);
+                      }
+
+                      setSendingReset(false);
+                    }}
+                  >
+                    <div className={sendingReset ? "animate-pulse" : ""}>
+                      {sendingReset
+                        ? "Processing request..."
+                        : resetSent
+                        ? "Password reset email sent"
+                        : "Reset password"}
+                    </div>
+                  </button>
                   <button
                     className="text-base font-medium hover:bg-neutral-400 dark:hover:bg-neutral-600 text-red-500 w-full text-start bg-neutral-300 dark:bg-neutral-700 p-2 rounded"
                     onClick={() => {
