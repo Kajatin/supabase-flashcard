@@ -11,11 +11,14 @@ import { useSession } from "@/utils/use-session";
 
 type Card = Database["public"]["Tables"]["cards"]["Row"];
 
-function Card(props: { card: Card }) {
-  const { card } = props;
+function Card(props: {
+  card: Card;
+  setSelectedCard: (c: Card | null) => void;
+}) {
+  const { card, setSelectedCard } = props;
 
   return (
-    <div className="my-masonry-grid_item">
+    <div className="my-masonry-grid_item" onClick={() => setSelectedCard(card)}>
       <div className="rounded-lg p-0.5 bg-gradient-to-br from-amber-500 to-indigo-500 max-w-md">
         <div className="flex flex-col gap-2 p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
           <div className="text-2xl font-medium text-center border bg-neutral-300 dark:bg-neutral-900 bg-opacity-50 rounded-lg border-neutral-600 py-1">
@@ -43,10 +46,12 @@ export default function Cards(props: {
 
   const [showAddCard, setShowAddCard] = useState(false);
   const [showErase, setShowErase] = useState(false);
+  const [showModifyCard, setShowModifyCard] = useState(false);
   const [newContent, setNewContent] = useState("");
   const [newExplanation, setNewExplanation] = useState("");
   const [language, setLanguage] = useState("Danish");
   const [generating, setGenerating] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const maxCards = 20;
 
   useEffect(() => {
@@ -116,12 +121,74 @@ export default function Cards(props: {
       .catch((err) => console.log(err));
   };
 
+  const modifyCard = async () => {
+    if (!selectedCard) {
+      return;
+    }
+
+    await fetch(`/api/cards/${selectedCard.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        content: newContent,
+        explanation: newExplanation,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const newCards = cards.map((c) => {
+          if (c.id === data[0].id) {
+            return data[0];
+          }
+          return c;
+        });
+        setCards(newCards);
+      })
+      .catch((err) => console.log(err));
+
+    setShowModifyCard(false);
+    setSelectedCard(null);
+  };
+
+  const eraseCard = async () => {
+    if (!selectedCard) {
+      return;
+    }
+
+    await fetch(`/api/cards/${selectedCard.id}`, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const newCards = cards.filter((c) => c.id !== data[0].id);
+        setCards(newCards);
+      })
+      .catch((err) => console.log(err));
+
+    setShowModifyCard(false);
+    setSelectedCard(null);
+  };
+
   useEffect(() => {
     if (!showAddCard) {
       setNewContent("");
       setNewExplanation("");
     }
   }, [showAddCard]);
+
+  useEffect(() => {
+    if (!selectedCard) {
+      setNewContent("");
+      setNewExplanation("");
+      return;
+    }
+
+    setNewContent(selectedCard.content);
+    setNewExplanation(selectedCard.explanation);
+    setShowModifyCard(true);
+  }, [selectedCard]);
 
   return (
     <>
@@ -250,6 +317,136 @@ export default function Cards(props: {
                     ? "Max cards reached (" + maxCards + ")"
                     : "Add"}
                 </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showModifyCard && (
+          <div className="absolute top-0 left-0 w-screen h-screen bg-neutral-600 dark:bg-neutral-900 bg-opacity-70 dark:bg-opacity-70">
+            <motion.div
+              className="grid place-items-center h-screen"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex flex-col gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-800 p-4 w-[50%]">
+                <div className="flex flex-row justify-between">
+                  <div className="font-medium text-xl">Modify card</div>
+                  <button
+                    className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
+                    onClick={() => setShowModifyCard(false)}
+                  >
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="rounded-lg p-0.5 bg-gradient-to-br from-amber-500 to-indigo-500">
+                  <button
+                    className={
+                      "px-2 py-1 bg-neutral-600 bg-opacity-30 dark:bg-opacity-50 rounded-lg m-1 " +
+                      (newContent && !generating
+                        ? "hover:bg-opacity-50 dark:hover:bg-opacity-70"
+                        : "cursor-not-allowed")
+                    }
+                    disabled={generating || !newContent}
+                    onClick={async () => {
+                      if (generating) {
+                        return;
+                      }
+
+                      setGenerating(true);
+
+                      const lang = localStorage.getItem("language");
+                      if (lang) {
+                        setLanguage(lang);
+                      }
+
+                      const prompt = generatePrompt(newContent, language);
+                      const resp = await fetch("/api/openai", {
+                        method: "POST",
+                        body: JSON.stringify({ prompt }),
+                      })
+                        .then((res) => res.text())
+                        .catch((err) => console.log(err));
+
+                      setGenerating(false);
+                      setNewExplanation(resp || "");
+                    }}
+                  >
+                    <div
+                      className={
+                        "flex flex-row gap-2.5 items-center " +
+                        (generating ? "animate-pulse" : "")
+                      }
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="20"
+                        width="20"
+                        fill="currentColor"
+                        viewBox="0 96 960 960"
+                      >
+                        <path d="m812 353-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75Zm-482 0-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75Zm482 482-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75ZM187 964l-95-95q-11-11-12-25.5T92 816l450-450q12-12 29-12t29 12l90 90q12 12 12 29t-12 29L240 964q-12 12-26.5 12T187 964Zm23-57 313-313-62-62-313 313 62 62Z" />
+                      </svg>
+                      <div>
+                        {generating ? "Generating..." : "Generate explanation"}
+                      </div>
+                    </div>
+                  </button>
+
+                  <div className="flex flex-col gap-2 p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
+                    <input
+                      className="text-lg font-medium text-center border bg-neutral-300 dark:bg-neutral-900 bg-opacity-50 rounded-lg border-neutral-600 py-1 outline-none"
+                      placeholder="Word"
+                      value={newContent}
+                      onChange={(e) => setNewContent(e.target.value)}
+                    />
+
+                    <textarea
+                      className="text-base text-neutral-500 dark:text-neutral-400 text-justify h-56 px-2 py-1 bg-transparent border rounded-lg border-neutral-600 outline-none resize-none"
+                      placeholder="Explanation"
+                      value={newExplanation}
+                      onChange={(e) => setNewExplanation(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <button
+                    className="text-base font-medium w-full text-center bg-neutral-300 dark:bg-neutral-700 p-2 rounded hover:bg-neutral-400 dark:hover:bg-neutral-600"
+                    onClick={() => {
+                      modifyCard();
+                    }}
+                  >
+                    Modify
+                  </button>
+
+                  <button
+                    className="text-base font-medium w-full text-center bg-neutral-300 dark:bg-neutral-700 p-2 rounded hover:bg-neutral-400 dark:hover:bg-neutral-600 text-red-500"
+                    onClick={() => {
+                      eraseCard();
+                    }}
+                  >
+                    Erase
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>
@@ -458,7 +655,7 @@ export default function Cards(props: {
                     exit={{ opacity: 0, y: 20 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <Card card={card} />
+                    <Card card={card} setSelectedCard={setSelectedCard} />
                   </motion.div>
                 </AnimatePresence>
               ))}
