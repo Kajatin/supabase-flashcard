@@ -82,7 +82,7 @@ export default function Collections(props: {
       <div className="flex flex-row justify-between">
         <div className="text-lg font-medium">Collections</div>
         <button
-          className="text-sm text-center text-neutral-400 hover:text-neutral-200"
+          className="text-sm text-center text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200"
           onClick={() => setShowAddCollection(true)}
         >
           <svg
@@ -104,7 +104,7 @@ export default function Collections(props: {
 
       <AnimatePresence>
         {showAddCollection && (
-          <div className="absolute top-0 left-0 w-screen h-screen bg-neutral-900 bg-opacity-70">
+          <div className="absolute top-0 left-0 w-screen h-screen bg-neutral-600 dark:bg-neutral-900 bg-opacity-70">
             <motion.div
               className="grid place-items-center h-screen"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -112,11 +112,11 @@ export default function Collections(props: {
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="flex flex-col gap-4 rounded-lg bg-neutral-800 p-4 w-[50%]">
+              <div className="flex flex-col gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-800 p-4 w-[50%]">
                 <div className="flex flex-row justify-between">
                   <div className="font-medium text-xl">New collection</div>
                   <button
-                    className="text-neutral-400 hover:text-neutral-200 text-center"
+                    className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
                     onClick={() => setShowAddCollection(false)}
                   >
                     <svg
@@ -138,11 +138,11 @@ export default function Collections(props: {
 
                 <div className="flex flex-col gap-1">
                   <div className="flex flex-col items-start gap-1 mb-2">
-                    <label className="text-sm font-medium text-neutral-400">
+                    <label className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
                       Title
                     </label>
                     <input
-                      className="border border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
+                      className="border border-neutral-500 dark:border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
                       type="text"
                       placeholder="Collection title"
                       onChange={(event) =>
@@ -153,11 +153,11 @@ export default function Collections(props: {
                   </div>
 
                   <div className="flex flex-col items-start gap-1 mb-2">
-                    <label className="text-sm font-medium text-neutral-400">
+                    <label className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
                       Description
                     </label>
                     <input
-                      className="border border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
+                      className="border border-neutral-500 dark:border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
                       type="text"
                       placeholder="Collection description"
                       onChange={(event) =>
@@ -169,10 +169,10 @@ export default function Collections(props: {
 
                   <button
                     className={
-                      "text-base font-medium w-full text-center bg-neutral-700 p-2 rounded " +
+                      "text-base font-medium w-full text-center bg-neutral-300 dark:bg-neutral-700 p-2 rounded " +
                       (collections.length >= maxCollections
                         ? "cursor-not-allowed opacity-60"
-                        : "hover:bg-neutral-600")
+                        : "hover:bg-neutral-400 dark:hover:bg-neutral-600")
                     }
                     disabled={collections.length >= maxCollections}
                     onClick={() => {
@@ -200,8 +200,10 @@ export default function Collections(props: {
           <div
             key={collection.id}
             className={
-              "flex flex-col p-1 hover:translate-x-1.5 hover:bg-neutral-800 bg-opacity-70 transition-all rounded " +
-              (selectedCollection === collection ? "bg-neutral-800" : "")
+              "flex flex-col p-1 hover:translate-x-1.5 hover:bg-neutral-400 hover:bg-opacity-30 dark:hover:bg-opacity-100 dark:hover:bg-neutral-800 bg-opacity-70 transition-all rounded " +
+              (selectedCollection === collection
+                ? "bg-neutral-400 bg-opacity-30"
+                : "")
             }
             onClick={() => {
               if (selectedCollection === collection) {
@@ -212,7 +214,7 @@ export default function Collections(props: {
             }}
           >
             <div className="">{collection.title}</div>
-            <div className="text-sm text-neutral-400">
+            <div className="text-sm text-neutral-500 dark:text-neutral-400">
               {collection.description}
             </div>
           </div>

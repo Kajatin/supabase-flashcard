@@ -76,7 +76,7 @@ export default function Profile() {
     <>
       <AnimatePresence>
         {showSettings && (
-          <div className="absolute top-0 left-0 w-screen h-screen bg-neutral-900 bg-opacity-70">
+          <div className="absolute top-0 left-0 w-screen h-screen bg-neutral-600 dark:bg-neutral-900 bg-opacity-70">
             <motion.div
               className="grid place-items-center h-screen"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -84,11 +84,11 @@ export default function Profile() {
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="flex flex-col gap-4 rounded-lg bg-neutral-800 p-4 w-[50%]">
+              <div className="flex flex-col gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-800 p-4 w-[50%]">
                 <div className="flex flex-row justify-between items-center">
                   <div className="text-lg font-medium">Settings</div>
                   <button
-                    className="text-neutral-400 hover:text-neutral-200"
+                    className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
                     onClick={() => setShowSettings(false)}
                   >
                     <svg
@@ -109,11 +109,11 @@ export default function Profile() {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-neutral-400">
+                  <label className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
                     OpenAI API Key
                   </label>
                   <input
-                    className="border border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
+                    className="border border-neutral-500 dark:border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
                     placeholder="sk-xxxxxxxxx"
                     value={oaAPI}
                     onChange={(e) => {
@@ -124,18 +124,18 @@ export default function Profile() {
                       });
                     }}
                   />
-                  <div className="text-sm text-neutral-500 px-2">
+                  <div className="text-sm text-neutral-400 dark:text-neutral-500 px-2">
                     Set your OpenAI API key to enable the AI to generate
                     description for new words that you add to your collections.
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-neutral-400">
+                  <label className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
                     Language
                   </label>
                   <input
-                    className="border border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
+                    className="border border-neutral-500 dark:border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
                     placeholder="Danish"
                     value={language}
                     onChange={(e) => {
@@ -143,18 +143,18 @@ export default function Profile() {
                       localStorage.setItem("language", e.target.value);
                     }}
                   />
-                  <div className="text-sm text-neutral-500 px-2">
+                  <div className="text-sm text-neutral-400 dark:text-neutral-500 px-2">
                     Set your OpenAI API key to enable the AI to generate
                     description for new words that you add to your collections.
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-neutral-400">
+                  <label className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
                     System
                   </label>
                   <button
-                    className="text-base font-medium hover:bg-neutral-600 text-red-500 w-full text-start bg-neutral-700 p-2 rounded"
+                    className="text-base font-medium hover:bg-neutral-400 dark:hover:bg-neutral-600 text-red-500 w-full text-start bg-neutral-300 dark:bg-neutral-700 p-2 rounded"
                     onClick={() => {
                       Cookies.remove("openai-api-key");
                       setOaAPI("");
@@ -173,7 +173,7 @@ export default function Profile() {
 
       <AnimatePresence>
         {showFeedback && (
-          <div className="absolute top-0 left-0 w-screen h-screen bg-neutral-900 bg-opacity-70">
+          <div className="absolute top-0 left-0 w-screen h-screen bg-neutral-600 dark:bg-neutral-900 bg-opacity-70">
             <motion.div
               className="grid place-items-center h-screen"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -181,11 +181,11 @@ export default function Profile() {
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="flex flex-col gap-4 rounded-lg bg-neutral-800 p-4 w-[50%]">
+              <div className="flex flex-col gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-800 p-4 w-[50%]">
                 <div className="flex flex-row justify-between items-center">
                   <div className="text-lg font-medium">Feedback</div>
                   <button
-                    className="text-neutral-400 hover:text-neutral-200"
+                    className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
                     onClick={() => setShowFeedback(false)}
                   >
                     <svg
@@ -206,14 +206,14 @@ export default function Profile() {
                 </div>
 
                 <textarea
-                  className="text-base text-justify h-56 px-2 py-1 bg-transparent border rounded-lg border-neutral-600 outline-none resize-none"
+                  className="text-base text-justify h-56 px-2 py-1 bg-transparent border rounded-lg border-neutral-500 dark:border-neutral-600 outline-none resize-none"
                   placeholder="Leave me some feedback!"
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
                 />
 
                 <button
-                  className="text-base font-medium hover:bg-neutral-600 w-full bg-neutral-700 text-center p-2 rounded"
+                  className="text-base font-medium hover:bg-neutral-400 dark:hover:bg-neutral-600 w-full bg-neutral-300 dark:bg-neutral-700 text-center p-2 rounded"
                   onClick={async () => {
                     if (!feedback || !profile) return;
 
@@ -240,24 +240,24 @@ export default function Profile() {
       </AnimatePresence>
 
       <div className="flex flex-col w-full px-2 py-5 items-start">
-        <div className="w-full border-t border-neutral-700 mb-1"></div>
-        <div className="text-sm text-neutral-400 font-medium my-1">
+        <div className="w-full border-t border-neutral-400 dark:border-neutral-700 mb-1"></div>
+        <div className="text-sm text-neutral-500 dark:text-neutral-400 font-medium my-1">
           {profile?.username}
         </div>
         <button
-          className="text-sm hover:bg-neutral-800 bg-opacity-70 w-full text-start p-1 rounded"
+          className="text-sm hover:bg-neutral-400 hover:text-neutral-50 dark:hover:bg-neutral-800 bg-opacity-70 w-full text-start p-1 rounded"
           onClick={() => setShowSettings(true)}
         >
           Settings
         </button>
         <button
-          className="text-sm hover:bg-neutral-800 bg-opacity-70 w-full text-start p-1 rounded"
+          className="text-sm hover:bg-neutral-400 hover:text-neutral-50 dark:hover:bg-neutral-800 bg-opacity-70 w-full text-start p-1 rounded"
           onClick={() => setShowFeedback(true)}
         >
           Feedback
         </button>
         <button
-          className="text-sm hover:bg-neutral-800 bg-opacity-70 w-full text-start p-1 rounded"
+          className="text-sm hover:bg-neutral-400 hover:text-neutral-50 dark:hover:bg-neutral-800 bg-opacity-70 w-full text-start p-1 rounded"
           onClick={handleLogout}
         >
           Logout

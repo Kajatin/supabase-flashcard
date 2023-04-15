@@ -17,11 +17,11 @@ function Card(props: { card: Card }) {
   return (
     <div className="my-masonry-grid_item">
       <div className="rounded-lg p-0.5 bg-gradient-to-br from-amber-500 to-indigo-500 max-w-md">
-        <div className="flex flex-col gap-2 p-4 bg-neutral-800 rounded-lg">
-          <div className="text-2xl font-medium text-center border bg-neutral-900 bg-opacity-50 rounded-lg border-neutral-600 py-1">
+        <div className="flex flex-col gap-2 p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
+          <div className="text-2xl font-medium text-center border bg-neutral-300 dark:bg-neutral-900 bg-opacity-50 rounded-lg border-neutral-600 py-1">
             {card.content}
           </div>
-          <div className="text-base text-neutral-400 text-justify">
+          <div className="text-base text-neutral-500 dark:text-neutral-400 text-justify">
             {card.explanation}
           </div>
         </div>
@@ -128,7 +128,7 @@ export default function Cards(props: {
     <>
       <AnimatePresence>
         {showAddCard && (
-          <div className="absolute top-0 left-0 w-screen h-screen bg-neutral-900 bg-opacity-70">
+          <div className="absolute top-0 left-0 w-screen h-screen bg-neutral-600 dark:bg-neutral-900 bg-opacity-70">
             <motion.div
               className="grid place-items-center h-screen"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -136,11 +136,11 @@ export default function Cards(props: {
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="flex flex-col gap-4 rounded-lg bg-neutral-800 p-4 w-[50%]">
+              <div className="flex flex-col gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-800 p-4 w-[50%]">
                 <div className="flex flex-row justify-between">
                   <div className="font-medium text-xl">New card</div>
                   <button
-                    className="text-sm text-neutral-400 hover:text-neutral-200 text-center"
+                    className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
                     onClick={() => setShowAddCard(false)}
                   >
                     <svg
@@ -162,9 +162,9 @@ export default function Cards(props: {
                 <div className="rounded-lg p-0.5 bg-gradient-to-br from-amber-500 to-indigo-500">
                   <button
                     className={
-                      "px-2 py-1 bg-neutral-600 bg-opacity-50 rounded-lg m-1 " +
+                      "px-2 py-1 bg-neutral-600 bg-opacity-30 dark:bg-opacity-50 rounded-lg m-1 " +
                       (newContent && !generating
-                        ? "hover:bg-opacity-70"
+                        ? "hover:bg-opacity-50 dark:hover:bg-opacity-70"
                         : "cursor-not-allowed")
                     }
                     disabled={generating || !newContent}
@@ -213,16 +213,16 @@ export default function Cards(props: {
                     </div>
                   </button>
 
-                  <div className="flex flex-col gap-2 p-4 bg-neutral-800 rounded-lg">
+                  <div className="flex flex-col gap-2 p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
                     <input
-                      className="text-lg font-medium text-center border bg-neutral-900 bg-opacity-50 rounded-lg border-neutral-600 p-1 outline-none"
+                      className="text-lg font-medium text-center border bg-neutral-300 dark:bg-neutral-900 bg-opacity-50 rounded-lg border-neutral-600 py-1 outline-none"
                       placeholder="Word"
                       value={newContent}
                       onChange={(e) => setNewContent(e.target.value)}
                     />
 
                     <textarea
-                      className="text-base text-neutral-400 text-justify h-56 px-2 py-1 bg-transparent border rounded-lg border-neutral-600 outline-none resize-none"
+                      className="text-base text-neutral-500 dark:text-neutral-400 text-justify h-56 px-2 py-1 bg-transparent border rounded-lg border-neutral-600 outline-none resize-none"
                       placeholder="Explanation"
                       value={newExplanation}
                       onChange={(e) => setNewExplanation(e.target.value)}
@@ -231,10 +231,10 @@ export default function Cards(props: {
                 </div>
                 <button
                   className={
-                    "text-base font-medium w-full bg-neutral-700 text-center p-2 rounded " +
+                    "text-base font-medium w-full text-center bg-neutral-300 dark:bg-neutral-700 p-2 rounded " +
                     (cards.length >= maxCards
                       ? "cursor-not-allowed opacity-60"
-                      : "hover:bg-neutral-600")
+                      : "hover:bg-neutral-400 dark:hover:bg-neutral-600")
                   }
                   disabled={cards.length >= maxCards}
                   onClick={() => {
@@ -269,7 +269,7 @@ export default function Cards(props: {
               <div className="text-2xl">{selectedCollection.title}</div>
               <div className="flex flex-row gap-2">
                 <button
-                  className="text-sm text-neutral-400 hover:text-neutral-200 text-center"
+                  className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
                   onClick={() => {
                     setShowAddCard(true);
                   }}
@@ -290,7 +290,7 @@ export default function Cards(props: {
                   </svg>
                 </button>
                 <button
-                  className="text-sm text-neutral-400 hover:text-neutral-200 text-center"
+                  className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
                   onClick={() => {
                     setGame(true);
                   }}

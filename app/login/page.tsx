@@ -55,19 +55,19 @@ export default function Login() {
 
   return (
     <div className="flex justify-center items-center w-screen h-screen">
-      <div className="flex flex-col justify-center items-center text-center border max-w-md rounded border-gray-500 bg-neutral-800 px-6 py-10">
+      <div className="flex flex-col justify-center items-center text-center border max-w-md rounded border-neutral-400 dark:border-neutral-500 bg-neutral-100 dark:bg-neutral-800 px-6 py-10">
         <div className="text-3xl">Welcome</div>
-        <div className="my-6 text-neutral-400 text-lg">
+        <div className="my-6 text-neutral-500 dark:text-neutral-400 text-lg">
           Log in to continue learning new languages
         </div>
 
         <div className="flex flex-col w-full gap-4">
           <div className="flex flex-col items-start gap-2">
-            <label className="text-sm font-medium text-neutral-400">
+            <label className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
               Email
             </label>
             <input
-              className="border border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
+              className="border border-neutral-500 dark:border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
               type="email"
               placeholder="Email"
               onChange={(event) => setEmail(event.target.value)}
@@ -76,11 +76,11 @@ export default function Login() {
           </div>
 
           <div className="flex flex-col items-start gap-2 mb-4">
-            <label className="text-sm font-medium text-neutral-400">
+            <label className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
               Password
             </label>
             <input
-              className="border border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
+              className="border border-neutral-500 dark:border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
               type="password"
               placeholder="Password"
               onChange={(event) => setPassword(event.target.value)}
@@ -125,7 +125,7 @@ export default function Login() {
                   strokeWidth="4"
                 ></circle>
                 <path
-                  className="opacity-75"
+                  className="dark:opacity-75"
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
@@ -135,7 +135,7 @@ export default function Login() {
             )}
           </button>
 
-          <div className="text-sm font-medium text-neutral-400">
+          <div className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
             Not registered?{" "}
             <Link
               href="/login/signup"
