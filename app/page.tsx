@@ -5,6 +5,7 @@ import Collections, { Collection } from "../components/Collections";
 import Profile from "../components/Profile";
 import Cards from "../components/Cards";
 import Play from "../components/Play";
+import Onboarding from "@/components/Onboarding";
 
 export default function Home() {
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -26,6 +27,7 @@ export default function Home() {
 
   return (
     <main className="w-screen h-screen flex flex-row gap-2 p-2">
+      <Onboarding />
       <div className="flex flex-col justify-between basis-1/5 border-r border-neutral-700">
         <Collections
           collections={collections}

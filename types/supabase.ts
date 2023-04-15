@@ -91,6 +91,7 @@ export interface Database {
         Row: {
           full_name: string | null
           id: string
+          onboarding: boolean
           updated_at: string | null
           username: string | null
           website: string | null
@@ -98,6 +99,7 @@ export interface Database {
         Insert: {
           full_name?: string | null
           id: string
+          onboarding?: boolean
           updated_at?: string | null
           username?: string | null
           website?: string | null
@@ -105,6 +107,7 @@ export interface Database {
         Update: {
           full_name?: string | null
           id?: string
+          onboarding?: boolean
           updated_at?: string | null
           username?: string | null
           website?: string | null
