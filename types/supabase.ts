@@ -66,21 +66,24 @@ export interface Database {
       }
       feedback: {
         Row: {
-          feedback: string
+          feedback: string | null
           id: number
           inserted_at: string
+          rating: number | null
           user_id: string | null
         }
         Insert: {
-          feedback: string
+          feedback?: string | null
           id?: number
           inserted_at?: string
+          rating?: number | null
           user_id?: string | null
         }
         Update: {
-          feedback?: string
+          feedback?: string | null
           id?: number
           inserted_at?: string
+          rating?: number | null
           user_id?: string | null
         }
       }
