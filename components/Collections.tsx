@@ -44,7 +44,10 @@ export default function Collections(props: {
       }),
     })
       .then((res) => res.json())
-      .then((data) => setCollections([...collections, data]))
+      .then((data) => {
+        setCollections([...collections, data]);
+        setSelectedCollection(data);
+      })
       .catch((err) => console.log(err));
   };
 
@@ -90,6 +93,26 @@ export default function Collections(props: {
           </svg>
         </button>
       </div>
+
+      {collections.length <= 0 && (
+        <div className="flex flex-row justify-end gap-1 text-amber-500 items-center animate-bounce">
+          <div>Create a collection</div>
+          <svg
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-5 h-5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"
+            />
+          </svg>
+        </div>
+      )}
 
       <AnimatePresence>
         {showAddCollection && (

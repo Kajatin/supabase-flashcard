@@ -158,6 +158,7 @@ export default function Cards(props: {
                     </svg>
                   </button>
                 </div>
+
                 <div className="rounded-lg p-0.5 bg-gradient-to-br from-amber-500 to-indigo-500">
                   <button
                     className={
@@ -376,28 +377,6 @@ export default function Cards(props: {
                 <button
                   className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
                   onClick={() => {
-                    setShowAddCard(true);
-                  }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
-                  </svg>
-                </button>
-
-                <button
-                  className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
-                  onClick={() => {
                     setGame(true);
                   }}
                 >
@@ -416,8 +395,50 @@ export default function Cards(props: {
                     />
                   </svg>
                 </button>
+
+                <button
+                  className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
+                  onClick={() => {
+                    setShowAddCard(true);
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                </button>
               </div>
             </div>
+
+            {cards.length <= 0 && (
+              <div className="flex flex-row justify-end gap-1 text-amber-500 items-center px-0.5 animate-bounce">
+                <div>Add a card</div>
+                <svg
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"
+                  />
+                </svg>
+              </div>
+            )}
 
             <Masonry
               breakpointCols={{
@@ -429,9 +450,17 @@ export default function Cards(props: {
               columnClassName="my-masonry-grid_column"
             >
               {cards.map((card) => (
-                <div key={card.id}>
-                  <Card card={card} />
-                </div>
+                <AnimatePresence>
+                  <motion.div
+                    key={card.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Card card={card} />
+                  </motion.div>
+                </AnimatePresence>
               ))}
             </Masonry>
           </motion.div>
