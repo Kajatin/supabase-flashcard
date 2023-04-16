@@ -7,7 +7,7 @@ export default function Head() {
         name="description"
         content="Learn languages with the use of flashcards"
       />
-      <link rel="icon" href="/favicon.ico" />
+      <link rel="icon" href="/favicon.ico?v=2" />
     </>
   );
 }
