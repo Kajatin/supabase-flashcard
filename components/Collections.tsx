@@ -48,14 +48,14 @@ export default function Collections(props: {
         setCollections([...collections, data]);
         setSelectedCollection(data);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   useEffect(() => {
     const fetchCollections = async () => {
       const { data, error } = await supabase.from("collections").select("*");
       if (error) {
-        console.log(error);
+        console.error(error);
       } else {
         setCollections(data);
       }

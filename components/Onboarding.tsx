@@ -25,7 +25,7 @@ export default function Onboarding() {
       .single();
 
     if (error) {
-      console.log(error);
+      console.error(error);
     } else {
       setProfile(profiles);
     }
@@ -38,7 +38,7 @@ export default function Onboarding() {
         .select("*")
         .single();
       if (error) {
-        console.log(error);
+        console.error(error);
       } else {
         setProfile(profiles);
       }

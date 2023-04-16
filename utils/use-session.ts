@@ -15,7 +15,7 @@ export function useSession() {
       } = await supabase.auth.getSession();
 
       if (error) {
-        console.log(error);
+        console.error(error);
       } else {
         setSession(session);
       }

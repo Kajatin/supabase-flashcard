@@ -11,7 +11,8 @@ export async function POST(request: Request) {
 
   const { count } = await supabase
     .from("cards")
-    .select("*", { count: "exact", head: true });
+    .select("*", { count: "exact", head: true })
+    .eq("collection_id", card.collection_id);
 
   if ((count || 0) >= 20) {
     return new Response("You have reached the maximum number of collections", {

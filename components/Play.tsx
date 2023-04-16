@@ -47,7 +47,7 @@ export default function Play(props: {
         .select("*")
         .eq("collection_id", selectedCollection.id);
       if (error) {
-        console.log(error);
+        console.error(error);
       } else {
         // shuffle cards
         for (let i = data.length - 1; i > 0; i--) {

@@ -37,7 +37,7 @@ export default function Profile() {
         .select("*")
         .single();
       if (error) {
-        console.log(error);
+        console.error(error);
       } else {
         setProfile(profiles);
       }
@@ -161,7 +161,7 @@ export default function Profile() {
                         );
 
                       if (error) {
-                        console.log(error);
+                        console.error(error);
                       } else {
                         setResetSent(true);
                       }
@@ -275,7 +275,7 @@ export default function Profile() {
                       ]);
 
                     if (error) {
-                      console.log(error);
+                      console.error(error);
                     }
 
                     setRating(0);

@@ -73,7 +73,7 @@ export default function Cards(props: {
         .select("*")
         .eq("collection_id", selectedCollection.id);
       if (error) {
-        console.log(error);
+        console.error(error);
       } else {
         setCards(data);
       }
@@ -105,7 +105,7 @@ export default function Cards(props: {
     })
       .then((res) => res.json())
       .then((data) => setCards([...cards, data]))
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const eraseCollection = async () => {
@@ -118,7 +118,7 @@ export default function Cards(props: {
     })
       .then((res) => res.json())
       .then((data) => removeCollection(data[0].id))
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const modifyCard = async () => {
@@ -146,7 +146,7 @@ export default function Cards(props: {
         });
         setCards(newCards);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
 
     setShowModifyCard(false);
     setSelectedCard(null);
@@ -165,7 +165,7 @@ export default function Cards(props: {
         const newCards = cards.filter((c) => c.id !== data[0].id);
         setCards(newCards);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
 
     setShowModifyCard(false);
     setSelectedCard(null);
@@ -259,7 +259,7 @@ export default function Cards(props: {
                         body: JSON.stringify({ prompt }),
                       })
                         .then((res) => res.text())
-                        .catch((err) => console.log(err));
+                        .catch((err) => console.error(err));
 
                       setGenerating(false);
                       setNewExplanation(resp || "");
@@ -390,7 +390,7 @@ export default function Cards(props: {
                         body: JSON.stringify({ prompt }),
                       })
                         .then((res) => res.text())
-                        .catch((err) => console.log(err));
+                        .catch((err) => console.error(err));
 
                       setGenerating(false);
                       setNewExplanation(resp || "");
