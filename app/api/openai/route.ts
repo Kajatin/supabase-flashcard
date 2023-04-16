@@ -32,6 +32,7 @@ export async function POST(request: Request) {
       { status: 200 }
     );
   } catch (error) {
+    console.error(error);
     return new Response("Error generating text", { status: 500 });
   }
 }
