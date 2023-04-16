@@ -74,7 +74,7 @@ export default function Onboarding() {
                 assisted explanations of foreign words.
               </div>
               <div className="text-lg">
-                To get started, click on the plus sign next to "Collections" on
+                To get started, click on the plus sign next to Collections on
                 the left to create a new collection. Then you can start adding
                 cards to it on the right.
               </div>
@@ -96,7 +96,7 @@ export default function Onboarding() {
                 className="bg-gradient-to-r from-amber-500 to-indigo-500 text-white font-medium py-2 px-2 text-lg rounded flex justify-center"
                 onClick={resetOnboarding}
               >
-                Let's go!
+                {"Let's go!"}
               </button>
             </div>
           </motion.div>

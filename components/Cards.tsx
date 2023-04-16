@@ -646,8 +646,8 @@ export default function Cards(props: {
               className="my-masonry-grid"
               columnClassName="my-masonry-grid_column"
             >
-              {cards.map((card) => (
-                <AnimatePresence>
+              <AnimatePresence>
+                {cards.map((card) => (
                   <motion.div
                     key={card.id}
                     initial={{ opacity: 0, y: 20 }}
@@ -657,8 +657,8 @@ export default function Cards(props: {
                   >
                     <Card card={card} setSelectedCard={setSelectedCard} />
                   </motion.div>
-                </AnimatePresence>
-              ))}
+                ))}
+              </AnimatePresence>
             </Masonry>
           </motion.div>
         )}
