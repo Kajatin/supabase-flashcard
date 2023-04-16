@@ -5,7 +5,11 @@ import { Collection } from "./Collections";
 import { useSupabase } from "../app/supabase-provider";
 import { Database } from "@/types/supabase";
 import { AnimatePresence, motion } from "framer-motion";
-import { generatePrompt } from "@/utils/openai-helpers";
+import {
+  generatePrompt,
+  generatePromptV3,
+  generateRecommendationPrompt,
+} from "@/utils/openai-helpers";
 import Masonry from "react-masonry-css";
 import { useSession } from "@/utils/use-session";
 
@@ -24,7 +28,7 @@ function Card(props: {
           <div className="text-2xl font-medium text-center border bg-neutral-300 dark:bg-neutral-900 bg-opacity-50 rounded-lg border-neutral-600 py-1">
             {card.content}
           </div>
-          <div className="text-base text-neutral-500 dark:text-neutral-400 text-justify">
+          <div className="text-base text-neutral-500 dark:text-neutral-400 text-justify whitespace-pre-wrap">
             {card.explanation}
           </div>
         </div>
@@ -253,7 +257,7 @@ export default function Cards(props: {
                         setLanguage(lang);
                       }
 
-                      const prompt = generatePrompt(newContent, language);
+                      const prompt = generatePromptV3(newContent, language);
                       const resp = await fetch("/api/openai", {
                         method: "POST",
                         body: JSON.stringify({ prompt }),
@@ -295,7 +299,7 @@ export default function Cards(props: {
                     />
 
                     <textarea
-                      className="text-base text-neutral-500 dark:text-neutral-400 text-justify h-56 px-2 py-1 bg-transparent border rounded-lg border-neutral-600 outline-none resize-none"
+                      className="text-base text-neutral-500 dark:text-neutral-400 text-justify h-56 px-2 py-1 bg-transparent border rounded-lg border-neutral-600 outline-none resize-none whitespace-pre-wrap"
                       placeholder="Explanation"
                       value={newExplanation}
                       onChange={(e) => setNewExplanation(e.target.value)}
@@ -555,6 +559,81 @@ export default function Cards(props: {
             <div className="flex flex-row justify-between items-center">
               <div className="text-2xl">{selectedCollection.title}</div>
               <div className="flex flex-row gap-2">
+                {cards.length >= 5 && (
+                  <button
+                    className={
+                      "text-md text-amber-500 dark:text-amber-500 text-center " +
+                      (generating
+                        ? "cursor-not-allowed opacity-60"
+                        : "hover:text-amber-600 dark:hover:text-amber-400")
+                    }
+                    disabled={generating}
+                    onClick={async () => {
+                      if (generating) {
+                        return;
+                      }
+
+                      setGenerating(true);
+
+                      const lang = localStorage.getItem("language");
+                      if (lang) {
+                        setLanguage(lang);
+                      }
+
+                      const words: string[] = cards.map((c) => c.content);
+                      const prompt = generateRecommendationPrompt(
+                        words,
+                        language,
+                        selectedCollection?.title || ""
+                      );
+                      const resp = await fetch("/api/openai", {
+                        method: "POST",
+                        body: JSON.stringify({ prompt }),
+                      })
+                        .then((res) => res.text())
+                        .catch((err) => console.error(err));
+
+                      setGenerating(false);
+
+                      if (!resp) {
+                        return;
+                      }
+
+                      // remove any punctuation from resp
+                      const cleanResp = resp.replace(
+                        /[.,\/#!$%\^&\*;:{}=\-_`~()]/g,
+                        ""
+                      );
+
+                      setNewContent(cleanResp);
+                      setShowAddCard(true);
+                    }}
+                  >
+                    <div className="relative flex h-6 w-6">
+                      <div className="animate-ping absolute inline-flex h-full w-full opacity-75">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-6 h-6"
+                          fill="currentColor"
+                          viewBox="0 96 960 960"
+                        >
+                          <path d="m812 353-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75Zm-482 0-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75Zm482 482-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75ZM187 964l-95-95q-11-11-12-25.5T92 816l450-450q12-12 29-12t29 12l90 90q12 12 12 29t-12 29L240 964q-12 12-26.5 12T187 964Zm23-57 313-313-62-62-313 313 62 62Z" />
+                        </svg>
+                      </div>
+                      <div className="relative inline-flex h-6 w-6">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-6 h-6"
+                          fill="currentColor"
+                          viewBox="0 96 960 960"
+                        >
+                          <path d="m812 353-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75Zm-482 0-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75Zm482 482-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75ZM187 964l-95-95q-11-11-12-25.5T92 816l450-450q12-12 29-12t29 12l90 90q12 12 12 29t-12 29L240 964q-12 12-26.5 12T187 964Zm23-57 313-313-62-62-313 313 62 62Z" />
+                        </svg>
+                      </div>
+                    </div>
+                  </button>
+                )}
+
                 <button
                   className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
                   onClick={() => {
