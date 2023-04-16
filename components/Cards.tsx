@@ -190,6 +190,12 @@ export default function Cards(props: {
     setShowModifyCard(true);
   }, [selectedCard]);
 
+  useEffect(() => {
+    if (!showModifyCard) {
+      setSelectedCard(null);
+    }
+  }, [showModifyCard]);
+
   return (
     <>
       <AnimatePresence>
