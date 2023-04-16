@@ -13,4 +13,6 @@ Created by: **Roland Kajatin** ([GitHub](https://github.com/Kajatin/supabase-fla
 
 In this project, I used Supabase as a **database** to store collections and cards with row level security. I also used it for user **authentication**. Users can sign up with their email address and password. Policies protect the database tables from unauthorized access.
 
-<https://github.com/Kajatin/supabase-flashcard/raw/readme/images/demo.mov>
+<p align="center">
+  <img width="600" height="400" src="images/demo.gif">
+</p>
