@@ -5,43 +5,69 @@ import { Collection } from "./Collections";
 import { useSupabase } from "../app/supabase-provider";
 import { Database } from "@/types/supabase";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  generatePrompt,
-  generatePromptV3,
-  generateRecommendationPrompt,
-} from "@/utils/openai-helpers";
+import { RecommendationData, TranslationData, exampleTranslationData, generatePrompt, generateRecommendationPrompt } from "@/utils/openai-helpers";
 import Masonry from "react-masonry-css";
 import { useSession } from "@/utils/use-session";
 
 type Card = Database["public"]["Tables"]["cards"]["Row"];
 
-function Card(props: {
-  card: Card;
-  setSelectedCard: (c: Card | null) => void;
-}) {
+function Card(props: { card: Card; setSelectedCard: (c: Card | null) => void }) {
   const { card, setSelectedCard } = props;
+
+  let parsedExplanation = exampleTranslationData;
+  try {
+    parsedExplanation = JSON.parse(card.explanation) as TranslationData;
+  } catch (error) {
+    console.error(error);
+  }
 
   return (
     <div className="my-masonry-grid_item" onClick={() => setSelectedCard(card)}>
       <div className="rounded-lg p-0.5 bg-gradient-to-br from-amber-500 to-indigo-500 max-w-md">
         <div className="flex flex-col gap-2 p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
-          <div className="text-2xl font-medium text-center border bg-neutral-300 dark:bg-neutral-900 bg-opacity-50 rounded-lg border-neutral-600 py-1">
-            {card.content}
+          <div className="text-2xl font-medium text-center border bg-neutral-300 dark:bg-neutral-900 bg-opacity-50 rounded-lg border-neutral-600 py-1">{card.content}</div>
+          <div className="text-base text-neutral-500 dark:text-neutral-400 text-justify whitespace-pre-wrap flex flex-col">
+            <div className="flex flex-row items-baseline gap-2">
+              <div className="text-neutral-700 dark:text-neutral-300">{parsedExplanation.translation}</div>
+              <div className="italic">{parsedExplanation.partOfSpeech}</div>
+            </div>
+            <div className="text-sm text-neutral-600 dark:text-neutral-500">(pronunciation: {parsedExplanation.pronunciation})</div>
           </div>
-          <div className="text-base text-neutral-500 dark:text-neutral-400 text-justify whitespace-pre-wrap">
-            {card.explanation}
+
+          <div className="text-base text-neutral-500 dark:text-neutral-400 text-justify whitespace-pre-wrap">{parsedExplanation.explanation}</div>
+
+          <div className="flex flex-col">
+            <div className="text-sm font-medium text-neutral-400 dark:text-neutral-500">examples</div>
+            <div className="text-base text-neutral-500 dark:text-neutral-400 text-justify whitespace-pre-wrap">
+              {parsedExplanation.examples.map((e, i) => (
+                <div key={i} className="flex flex-col">
+                  <div>{e.native}</div>
+                  <div>{e.translation}</div>
+                </div>
+              ))}
+            </div>
           </div>
+
+          {parsedExplanation.synonyms.length > 0 && (
+            <div className="flex flex-col">
+              <div className="text-sm font-medium text-neutral-400 dark:text-neutral-500">synonyms</div>
+              <div className="text-base text-neutral-500 dark:text-neutral-400 text-justify whitespace-pre-wrap">{parsedExplanation.synonyms.join(", ")}</div>
+            </div>
+          )}
+
+          {parsedExplanation.antonyms.length > 0 && (
+            <div className="flex flex-col">
+              <div className="text-sm font-medium text-neutral-400 dark:text-neutral-500">antonyms</div>
+              <div className="text-base text-neutral-500 dark:text-neutral-400 text-justify whitespace-pre-wrap">{parsedExplanation.antonyms.join(", ")}</div>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-export default function Cards(props: {
-  selectedCollection: Collection | null;
-  setGame: (game: boolean) => void;
-  removeCollection: (id: number) => void;
-}) {
+export default function Cards(props: { selectedCollection: Collection | null; setGame: (game: boolean) => void; removeCollection: (id: number) => void }) {
   const { supabase } = useSupabase();
   const { selectedCollection, setGame, removeCollection } = props;
 
@@ -72,10 +98,7 @@ export default function Cards(props: {
     }
 
     const fetchCards = async () => {
-      const { data, error } = await supabase
-        .from("cards")
-        .select("*")
-        .eq("collection_id", selectedCollection.id);
+      const { data, error } = await supabase.from("cards").select("*").eq("collection_id", selectedCollection.id);
       if (error) {
         console.error(error);
       } else {
@@ -215,23 +238,9 @@ export default function Cards(props: {
               <div className="flex flex-col gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-800 p-4 w-[50%]">
                 <div className="flex flex-row justify-between">
                   <div className="font-medium text-xl">New card</div>
-                  <button
-                    className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
-                    onClick={() => setShowAddCard(false)}
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
+                  <button className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center" onClick={() => setShowAddCard(false)}>
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
@@ -240,9 +249,7 @@ export default function Cards(props: {
                   <button
                     className={
                       "px-2 py-1 bg-neutral-600 bg-opacity-30 dark:bg-opacity-50 rounded-lg m-1 " +
-                      (newContent && !generating
-                        ? "hover:bg-opacity-50 dark:hover:bg-opacity-70"
-                        : "cursor-not-allowed")
+                      (newContent && !generating ? "hover:bg-opacity-50 dark:hover:bg-opacity-70" : "cursor-not-allowed")
                     }
                     disabled={generating || !newContent}
                     onClick={async () => {
@@ -257,36 +264,23 @@ export default function Cards(props: {
                         setLanguage(lang);
                       }
 
-                      const prompt = generatePromptV3(newContent, language);
+                      const prompt = generatePrompt(newContent, language);
                       const resp = await fetch("/api/openai", {
                         method: "POST",
                         body: JSON.stringify({ prompt }),
                       })
-                        .then((res) => res.text())
+                        .then((res) => res.json() as Promise<TranslationData>)
                         .catch((err) => console.error(err));
 
                       setGenerating(false);
-                      setNewExplanation(resp || "");
+                      setNewExplanation(JSON.stringify(resp) || "");
                     }}
                   >
-                    <div
-                      className={
-                        "flex flex-row gap-2.5 items-center " +
-                        (generating ? "animate-pulse" : "")
-                      }
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="20"
-                        width="20"
-                        fill="currentColor"
-                        viewBox="0 96 960 960"
-                      >
+                    <div className={"flex flex-row gap-2.5 items-center " + (generating ? "animate-pulse" : "")}>
+                      <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" fill="currentColor" viewBox="0 96 960 960">
                         <path d="m812 353-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75Zm-482 0-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75Zm482 482-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75ZM187 964l-95-95q-11-11-12-25.5T92 816l450-450q12-12 29-12t29 12l90 90q12 12 12 29t-12 29L240 964q-12 12-26.5 12T187 964Zm23-57 313-313-62-62-313 313 62 62Z" />
                       </svg>
-                      <div>
-                        {generating ? "Generating..." : "Generate explanation"}
-                      </div>
+                      <div>{generating ? "Generating..." : "Generate explanation"}</div>
                     </div>
                   </button>
 
@@ -309,9 +303,7 @@ export default function Cards(props: {
                 <button
                   className={
                     "text-base font-medium w-full text-center bg-neutral-300 dark:bg-neutral-700 p-2 rounded " +
-                    (cards.length >= maxCards
-                      ? "cursor-not-allowed opacity-60"
-                      : "hover:bg-neutral-400 dark:hover:bg-neutral-600")
+                    (cards.length >= maxCards ? "cursor-not-allowed opacity-60" : "hover:bg-neutral-400 dark:hover:bg-neutral-600")
                   }
                   disabled={cards.length >= maxCards}
                   onClick={() => {
@@ -323,9 +315,7 @@ export default function Cards(props: {
                     setShowAddCard(false);
                   }}
                 >
-                  {cards.length >= maxCards
-                    ? "Max cards reached (" + maxCards + ")"
-                    : "Add"}
+                  {cards.length >= maxCards ? "Max cards reached (" + maxCards + ")" : "Add"}
                 </button>
               </div>
             </motion.div>
@@ -350,19 +340,8 @@ export default function Cards(props: {
                     className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
                     onClick={() => setShowModifyCard(false)}
                   >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
@@ -371,9 +350,7 @@ export default function Cards(props: {
                   <button
                     className={
                       "px-2 py-1 bg-neutral-600 bg-opacity-30 dark:bg-opacity-50 rounded-lg m-1 " +
-                      (newContent && !generating
-                        ? "hover:bg-opacity-50 dark:hover:bg-opacity-70"
-                        : "cursor-not-allowed")
+                      (newContent && !generating ? "hover:bg-opacity-50 dark:hover:bg-opacity-70" : "cursor-not-allowed")
                     }
                     disabled={generating || !newContent}
                     onClick={async () => {
@@ -393,31 +370,18 @@ export default function Cards(props: {
                         method: "POST",
                         body: JSON.stringify({ prompt }),
                       })
-                        .then((res) => res.text())
+                        .then((res) => res.json() as Promise<TranslationData>)
                         .catch((err) => console.error(err));
 
                       setGenerating(false);
-                      setNewExplanation(resp || "");
+                      setNewExplanation(JSON.stringify(resp) || "");
                     }}
                   >
-                    <div
-                      className={
-                        "flex flex-row gap-2.5 items-center " +
-                        (generating ? "animate-pulse" : "")
-                      }
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="20"
-                        width="20"
-                        fill="currentColor"
-                        viewBox="0 96 960 960"
-                      >
+                    <div className={"flex flex-row gap-2.5 items-center " + (generating ? "animate-pulse" : "")}>
+                      <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" fill="currentColor" viewBox="0 96 960 960">
                         <path d="m812 353-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75Zm-482 0-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75Zm482 482-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75ZM187 964l-95-95q-11-11-12-25.5T92 816l450-450q12-12 29-12t29 12l90 90q12 12 12 29t-12 29L240 964q-12 12-26.5 12T187 964Zm23-57 313-313-62-62-313 313 62 62Z" />
                       </svg>
-                      <div>
-                        {generating ? "Generating..." : "Generate explanation"}
-                      </div>
+                      <div>{generating ? "Generating..." : "Generate explanation"}</div>
                     </div>
                   </button>
 
@@ -476,43 +440,18 @@ export default function Cards(props: {
               <div className="flex flex-col gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-800 p-4 w-[50%]">
                 <div className="flex flex-row justify-between">
                   <div className="font-medium text-xl">Erase collection</div>
-                  <button
-                    className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
-                    onClick={() => setShowErase(false)}
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
+                  <button className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center" onClick={() => setShowErase(false)}>
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
 
                 <div className="text-lg text-neutral-500 dark:text-neutral-400">
-                  Are you sure you want to erase{" "}
-                  <span className="font-medium text-amber-500">
-                    {selectedCollection?.title}
-                  </span>
-                  ? All cards for this collection will be removed too.
+                  Are you sure you want to erase <span className="font-medium text-amber-500">{selectedCollection?.title}</span>? All cards for this collection will be removed too.
                 </div>
                 <div className="flex flex-row items-center gap-2 text-lg text-neutral-500 dark:text-neutral-400 font-medium">
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={1.5}
-                    className="w-6 h-6"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
+                  <svg fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -525,9 +464,7 @@ export default function Cards(props: {
                 <button
                   className={
                     "text-base font-medium w-full text-center bg-neutral-300 dark:bg-neutral-700 p-2 rounded " +
-                    (!selectedCollection
-                      ? "cursor-not-allowed opacity-60"
-                      : "hover:bg-neutral-400 dark:hover:bg-neutral-600")
+                    (!selectedCollection ? "cursor-not-allowed opacity-60" : "hover:bg-neutral-400 dark:hover:bg-neutral-600")
                   }
                   disabled={!selectedCollection}
                   onClick={() => {
@@ -562,10 +499,7 @@ export default function Cards(props: {
                 {cards.length >= 5 && (
                   <button
                     className={
-                      "text-md text-amber-500 dark:text-amber-500 text-center " +
-                      (generating
-                        ? "cursor-not-allowed opacity-60"
-                        : "hover:text-amber-600 dark:hover:text-amber-400")
+                      "text-md text-amber-500 dark:text-amber-500 text-center " + (generating ? "cursor-not-allowed opacity-60" : "hover:text-amber-600 dark:hover:text-amber-400")
                     }
                     disabled={generating}
                     onClick={async () => {
@@ -581,16 +515,12 @@ export default function Cards(props: {
                       }
 
                       const words: string[] = cards.map((c) => c.content);
-                      const prompt = generateRecommendationPrompt(
-                        words,
-                        language,
-                        selectedCollection?.title || ""
-                      );
+                      const prompt = generateRecommendationPrompt(words, language, selectedCollection?.title || "");
                       const resp = await fetch("/api/openai", {
                         method: "POST",
                         body: JSON.stringify({ prompt }),
                       })
-                        .then((res) => res.text())
+                        .then((res) => res.json() as Promise<RecommendationData>)
                         .catch((err) => console.error(err));
 
                       setGenerating(false);
@@ -600,10 +530,7 @@ export default function Cards(props: {
                       }
 
                       // remove any punctuation from resp
-                      const cleanResp = resp.replace(
-                        /[.,\/#!$%\^&\*;:{}=\-_`~()]/g,
-                        ""
-                      );
+                      const cleanResp = resp.word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
 
                       setNewContent(cleanResp);
                       setShowAddCard(true);
@@ -611,22 +538,12 @@ export default function Cards(props: {
                   >
                     <div className="relative flex h-6 w-6">
                       <div className="animate-ping absolute inline-flex h-full w-full opacity-75">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="w-6 h-6"
-                          fill="currentColor"
-                          viewBox="0 96 960 960"
-                        >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="currentColor" viewBox="0 96 960 960">
                           <path d="m812 353-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75Zm-482 0-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75Zm482 482-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75ZM187 964l-95-95q-11-11-12-25.5T92 816l450-450q12-12 29-12t29 12l90 90q12 12 12 29t-12 29L240 964q-12 12-26.5 12T187 964Zm23-57 313-313-62-62-313 313 62 62Z" />
                         </svg>
                       </div>
                       <div className="relative inline-flex h-6 w-6">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="w-6 h-6"
-                          fill="currentColor"
-                          viewBox="0 96 960 960"
-                        >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="currentColor" viewBox="0 96 960 960">
                           <path d="m812 353-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75Zm-482 0-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75Zm482 482-34-75-75-34 75-34 34-75 34 75 75 34-75 34-34 75ZM187 964l-95-95q-11-11-12-25.5T92 816l450-450q12-12 29-12t29 12l90 90q12 12 12 29t-12 29L240 964q-12 12-26.5 12T187 964Zm23-57 313-313-62-62-313 313 62 62Z" />
                         </svg>
                       </div>
@@ -640,14 +557,7 @@ export default function Cards(props: {
                     setShowErase(true);
                   }}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -662,14 +572,7 @@ export default function Cards(props: {
                     setGame(true);
                   }}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -684,19 +587,8 @@ export default function Cards(props: {
                     setShowAddCard(true);
                   }}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                   </svg>
                 </button>
               </div>
@@ -705,19 +597,8 @@ export default function Cards(props: {
             {cards.length <= 0 && (
               <div className="flex flex-row justify-end gap-1 text-amber-500 items-center px-0.5 animate-bounce">
                 <div>Add a card</div>
-                <svg
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-5 h-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"
-                  />
+                <svg fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" />
                 </svg>
               </div>
             )}
@@ -732,13 +613,7 @@ export default function Cards(props: {
               columnClassName="my-masonry-grid_column"
             >
               {cards.map((card) => (
-                <motion.div
-                  key={card.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{ duration: 0.2 }}
-                >
+                <motion.div key={card.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} transition={{ duration: 0.2 }}>
                   <Card card={card} setSelectedCard={setSelectedCard} />
                 </motion.div>
               ))}

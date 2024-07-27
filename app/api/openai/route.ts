@@ -1,36 +1,32 @@
-import { cookies } from "next/headers";
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI from "openai";
 
 export async function POST(request: Request) {
-  const cookieStore = cookies();
-  const key = cookieStore.get("openai-api-key")?.value;
   const { prompt } = await request.json();
-
-  if (!key) {
-    return new Response("No API key provided", { status: 401 });
-  }
 
   if (!prompt) {
     return new Response("No prompt provided", { status: 400 });
   }
 
-  const configuration = new Configuration({
-    apiKey: key,
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
   });
-  const openai = new OpenAIApi(configuration);
 
   try {
-    const completion = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: prompt,
+    const completion: OpenAI.Chat.Completions.ChatCompletion = await openai.chat.completions.create({
+      messages: prompt,
+      model: "gpt-4o-mini",
       max_tokens: 500,
-      temperature: 0.5,
+      response_format: { type: "json_object" },
+      temperature: 0.2,
     });
 
-    return new Response(
-      completion.data.choices[0].text?.trim() || "No text was generated",
-      { status: 200 }
-    );
+    const response = completion.choices[0].message.content?.trim();
+
+    if (!response) {
+      return new Response("No text was generated", { status: 500 });
+    }
+
+    return new Response(response, { status: 200 });
   } catch (error) {
     console.error(error);
     return new Response("Error generating text", { status: 500 });

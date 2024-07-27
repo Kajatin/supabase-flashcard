@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 import { useSupabase } from "../supabase-provider";
 import { AnimatePresence, motion } from "framer-motion";
 
-export default function Login() {
+function LoginView() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -57,15 +57,11 @@ export default function Login() {
     <div className="flex justify-center items-center w-screen h-screen">
       <div className="flex flex-col justify-center items-center text-center border max-w-md rounded border-neutral-400 dark:border-neutral-500 bg-neutral-100 dark:bg-neutral-800 px-6 py-10">
         <div className="text-3xl">Welcome</div>
-        <div className="my-6 text-neutral-500 dark:text-neutral-400 text-lg">
-          Log in to continue learning new languages
-        </div>
+        <div className="my-6 text-neutral-500 dark:text-neutral-400 text-lg">Log in to continue learning new languages</div>
 
         <div className="flex flex-col w-full gap-4">
           <div className="flex flex-col items-start gap-2">
-            <label className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
-              Email
-            </label>
+            <label className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Email</label>
             <input
               className="border border-neutral-500 dark:border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
               type="email"
@@ -76,9 +72,7 @@ export default function Login() {
           </div>
 
           <div className="flex flex-col items-start gap-2 mb-4">
-            <label className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
-              Password
-            </label>
+            <label className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Password</label>
             <input
               className="border border-neutral-500 dark:border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
               type="password"
@@ -102,28 +96,13 @@ export default function Login() {
           </AnimatePresence>
 
           <button
-            className={
-              "bg-gradient-to-r from-amber-500 to-indigo-500 text-white font-medium py-2 px-4 rounded flex justify-center " +
-              (loggingIn ? "cursor-not-allowed" : "")
-            }
+            className={"bg-gradient-to-r from-amber-500 to-indigo-500 text-white font-medium py-2 px-4 rounded flex justify-center " + (loggingIn ? "cursor-not-allowed" : "")}
             onClick={handleLogin}
             disabled={loggingIn}
           >
             {loggingIn ? (
-              <svg
-                className="animate-spin h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
+              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path
                   className="dark:opacity-75"
                   fill="currentColor"
@@ -137,15 +116,20 @@ export default function Login() {
 
           <div className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
             Not registered?{" "}
-            <Link
-              href="/login/signup"
-              className="text-amber-500 hover:underline"
-            >
+            <Link href="/login/signup" className="text-amber-500 hover:underline">
               Sign up
             </Link>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Login() {
+  return (
+    <Suspense>
+      <LoginView />
+    </Suspense>
   );
 }

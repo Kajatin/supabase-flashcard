@@ -1,72 +1,50 @@
 export function generatePrompt(title: string, language: string) {
-  return (
-    "You are a helpful " +
-    language +
-    " language instructor and a student is asking about a word. " +
-    "You are going to help them understand the word by explaining in English and giving examples in " +
-    language +
-    ".\n" +
-    "Start by giving them the definition of the word with an example as well as the pronunciation and part of speech. " +
-    "Give them a synonym and an antonym too.\n" +
-    "The word is " +
-    title +
-    "."
-  );
+  return [
+    { role: "system", content: "You are a helpful language assistant." },
+    { role: "system", content: "You must provide your response as a valid JSON object." },
+    { role: "system", content: "You are being presented with a word or a phrase in " + language + ". Your job is to help me understand the word by explaining it in English and giving one full sentence example in " + language + " with translations in English." },
+    { role: "user", content: "The word is 'goddag'." },
+    { role: "assistant", content: JSON.stringify(exampleTranslationData) },
+    { role: "user", content: "The word is '" + title + "'." },
+  ];
 }
 
-export function generatePromptV2(title: string, language: string) {
-  return (
-    "You are being presented with a word or a phrase in " +
-    language +
-    ". Your job is to help me understand the word by explaining it in English and " +
-    "giving one full sentence example in " +
-    language +
-    " with translations in English.\n" +
-    "In your response give the definition of the word as well as the pronunciation and part of speech.\n" +
-    "Synonyms and antonyms are optional but if given should be in " +
-    language +
-    ".\n" +
-    "Your response must be formatted as a JSON object with the following keys: definition, pronunciation, partOfSpeech, examples, synonyms, antonyms.\n" +
-    "The input is " +
-    title +
-    "."
-  );
+export function generateRecommendationPrompt(words: string[], language: string, topic: string) {
+  return [
+    { role: "system", content: "You are a helpful language assistant." },
+    { role: "system", content: "You must provide your response as a valid JSON object." },
+    { role: "system", content: "You are shown a list of words or phrases that the user has entered into a collection. Your job is to recommend a word in " + language + " that the user should learn next. Your response should be a single word that is not already in the list. Format the response in all lower case and without any punctuation." },
+    { role: "user", content: "The topic of this collection is Travel. The words are: lufthavn, bil, afgang." },
+    { role: "assistant", content: JSON.stringify({ word: "fly" }) },
+    { role: "user", content: "The topic of this collection is " + topic + ". The words are: " + words.join(", ") + "." },
+  ];
 }
 
-export function generatePromptV3(title: string, language: string) {
-  return (
-    "You are being presented with a word or a phrase in " +
-    language +
-    ". Your job is to help me understand the word by explaining it in English and " +
-    "giving one full sentence example in " +
-    language +
-    " with translations in English.\n" +
-    "In your response give the definition of the word as well as the pronunciation and part of speech.\n" +
-    "Your response must be nicely formatted.\n" +
-    "The input is " +
-    title +
-    "."
-  );
-}
+export type RecommendationData = {
+  word: string;
+};
 
-export function generateRecommendationPrompt(
-  words: string[],
-  language: string,
-  topic: string
-) {
-  return (
-    "I am showing you a list of words or phrases that the user has entered into a collection. " +
-    "The topic of this collection is " +
-    topic +
-    ". The use-case is for the user to learn " +
-    language +
-    ".\n" +
-    "Your job is to recommend a word in " +
-    language +
-    "that the user should learn next.\n" +
-    "Your response should be a single word that is not already in the list. Format the response in all lower case and without any punctuation.\n" +
-    "The words are: " +
-    words.join(", ") +
-    "."
-  );
-}
+export type Example = {
+  native: string;
+  translation: string;
+};
+
+export type TranslationData = {
+  translation: string;
+  explanation: string;
+  pronunciation: string;
+  partOfSpeech: string;
+  examples: Example[];
+  synonyms: string[];
+  antonyms: string[];
+};
+
+export const exampleTranslationData: TranslationData = {
+  translation: "hello",
+  explanation: "It is used as a greeting.",
+  pronunciation: "goh-dahg",
+  partOfSpeech: "interjection",
+  examples: [{ native: "Goddag! Hvordan har du det?", translation: "Hello! How are you?" }],
+  synonyms: ["hej", "hallo"],
+  antonyms: ["farvel", "hej hej"],
+};

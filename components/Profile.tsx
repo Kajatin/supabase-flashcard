@@ -4,7 +4,6 @@ import { Database } from "@/types/supabase";
 import { useSupabase } from "../app/supabase-provider";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import Cookies from "js-cookie";
 import { useSession } from "@/utils/use-session";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
@@ -17,7 +16,6 @@ export default function Profile() {
   const [showSettings, setShowSettings] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [rating, setRating] = useState(0);
-  const [oaAPI, setOaAPI] = useState("");
   const [feedback, setFeedback] = useState("");
   const [language, setLanguage] = useState("Danish");
   const [sendingReset, setSendingReset] = useState(false);
@@ -32,10 +30,7 @@ export default function Profile() {
 
   useEffect(() => {
     const fetchCollections = async () => {
-      const { data: profiles, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .single();
+      const { data: profiles, error } = await supabase.from("profiles").select("*").single();
       if (error) {
         console.error(error);
       } else {
@@ -45,13 +40,6 @@ export default function Profile() {
 
     fetchCollections();
   }, [supabase]);
-
-  useEffect(() => {
-    const oaAPIKey = Cookies.get("openai-api-key");
-    if (oaAPIKey) {
-      setOaAPI(oaAPIKey);
-    }
-  }, []);
 
   const handleLogout = async (event: any) => {
     event.preventDefault();
@@ -73,53 +61,15 @@ export default function Profile() {
               <div className="flex flex-col gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-800 p-4 w-[50%]">
                 <div className="flex flex-row justify-between items-center">
                   <div className="text-lg font-medium">Settings</div>
-                  <button
-                    className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
-                    onClick={() => setShowSettings(false)}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
+                  <button className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center" onClick={() => setShowSettings(false)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
-                    OpenAI API Key
-                  </label>
-                  <input
-                    className="border border-neutral-500 dark:border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
-                    placeholder="sk-xxxxxxxxx"
-                    value={oaAPI}
-                    onChange={(e) => {
-                      setOaAPI(e.target.value);
-                      Cookies.set("openai-api-key", e.target.value, {
-                        expires: 1,
-                        path: "/",
-                      });
-                    }}
-                  />
-                  <div className="text-sm text-neutral-400 dark:text-neutral-500 px-2">
-                    Set your OpenAI API key to enable the AI to generate
-                    description for new words that you add to your collections.
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
-                    Language
-                  </label>
+                  <label className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Language</label>
                   <input
                     className="border border-neutral-500 dark:border-neutral-600 rounded w-full py-2 px-3 dark:bg-neutral-900 outline-none"
                     placeholder="Danish"
@@ -130,8 +80,7 @@ export default function Profile() {
                     }}
                   />
                   <div className="text-sm text-neutral-400 dark:text-neutral-500 px-2">
-                    Set the language to enable the AI to generate description
-                    for new words that you add to your collections.
+                    Set the language to enable the AI to generate description for new words that you add to your collections.
                   </div>
                 </div>
 
@@ -139,9 +88,7 @@ export default function Profile() {
                   <button
                     className={
                       "text-base font-medium w-full text-start bg-neutral-300 dark:bg-neutral-700 p-2 rounded " +
-                      (sendingReset || resetSent
-                        ? "cursor-not-allowed"
-                        : "hover:bg-neutral-400 dark:hover:bg-neutral-600")
+                      (sendingReset || resetSent ? "cursor-not-allowed" : "hover:bg-neutral-400 dark:hover:bg-neutral-600")
                     }
                     disabled={resetSent}
                     onClick={async () => {
@@ -155,10 +102,7 @@ export default function Profile() {
 
                       setSendingReset(true);
 
-                      const { data, error } =
-                        await supabase.auth.resetPasswordForEmail(
-                          session?.user?.email || ""
-                        );
+                      const { data, error } = await supabase.auth.resetPasswordForEmail(session?.user?.email || "");
 
                       if (error) {
                         console.error(error);
@@ -169,19 +113,11 @@ export default function Profile() {
                       setSendingReset(false);
                     }}
                   >
-                    <div className={sendingReset ? "animate-pulse" : ""}>
-                      {sendingReset
-                        ? "Processing request..."
-                        : resetSent
-                        ? "Password reset email sent"
-                        : "Reset password"}
-                    </div>
+                    <div className={sendingReset ? "animate-pulse" : ""}>{sendingReset ? "Processing request..." : resetSent ? "Password reset email sent" : "Reset password"}</div>
                   </button>
                   <button
                     className="text-base font-medium hover:bg-neutral-400 dark:hover:bg-neutral-600 text-red-500 w-full text-start bg-neutral-300 dark:bg-neutral-700 p-2 rounded"
                     onClick={() => {
-                      Cookies.remove("openai-api-key");
-                      setOaAPI("");
                       localStorage.removeItem("language");
                       setLanguage("Danish");
                     }}
@@ -208,23 +144,9 @@ export default function Profile() {
               <div className="flex flex-col gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-800 p-4 w-[50%]">
                 <div className="flex flex-row justify-between items-center">
                   <div className="text-lg font-medium">Feedback</div>
-                  <button
-                    className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center"
-                    onClick={() => setShowFeedback(false)}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
+                  <button className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-center" onClick={() => setShowFeedback(false)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
@@ -264,15 +186,13 @@ export default function Profile() {
                   onClick={async () => {
                     if (!feedback || !profile) return;
 
-                    const { data, error } = await supabase
-                      .from("feedback")
-                      .insert([
-                        {
-                          rating: rating,
-                          feedback: feedback,
-                          user_id: session?.user.id || "",
-                        },
-                      ]);
+                    const { data, error } = await supabase.from("feedback").insert([
+                      {
+                        rating: rating,
+                        feedback: feedback,
+                        user_id: session?.user.id || "",
+                      },
+                    ]);
 
                     if (error) {
                       console.error(error);
@@ -293,9 +213,7 @@ export default function Profile() {
 
       <div className="flex flex-col w-full pr-2 py-5 items-start">
         <div className="w-full border-t border-neutral-400 dark:border-neutral-700 mb-1"></div>
-        <div className="text-sm text-neutral-500 dark:text-neutral-400 font-medium my-1">
-          {profile?.username}
-        </div>
+        <div className="text-sm text-neutral-500 dark:text-neutral-400 font-medium my-1">{profile?.username}</div>
         <button
           className="text-sm hover:bg-neutral-400 hover:text-neutral-50 dark:hover:bg-neutral-800 bg-opacity-70 w-full text-start p-1 rounded"
           onClick={() => setShowSettings(true)}
@@ -308,10 +226,7 @@ export default function Profile() {
         >
           Feedback
         </button>
-        <button
-          className="text-sm hover:bg-neutral-400 hover:text-neutral-50 dark:hover:bg-neutral-800 bg-opacity-70 w-full text-start p-1 rounded"
-          onClick={handleLogout}
-        >
+        <button className="text-sm hover:bg-neutral-400 hover:text-neutral-50 dark:hover:bg-neutral-800 bg-opacity-70 w-full text-start p-1 rounded" onClick={handleLogout}>
           Logout
         </button>
       </div>
