@@ -64,38 +64,15 @@ export default function Onboarding() {
           >
             <div className="flex flex-col text-center gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-800 p-4 w-[40%]">
               <div className="bg-gradient-to-r from-amber-500 to-indigo-500 rounded flex justify-center p-0.5">
-                <div className="font-medium text-3xl bg-neutral-100 dark:bg-neutral-800 w-full px-4 py-2">
-                  Welcome to Flashcards
-                </div>
+                <div className="font-medium text-3xl bg-neutral-100 dark:bg-neutral-800 w-full px-4 py-2">Welcome to Flashcards</div>
               </div>
               <div className="text-xl">Thank you for signing up!</div>
+              <div className="text-lg">In this app you can create collections of flashcards with AI assisted explanations of foreign words.</div>
               <div className="text-lg">
-                In this app you can create collections of flashcards with AI
-                assisted explanations of foreign words.
-              </div>
-              <div className="text-lg">
-                To get started, click on the plus sign next to Collections on
-                the left to create a new collection. Then you can start adding
-                cards to it on the right.
-              </div>
-              <div className="text-lg">
-                If you want to make use of the AI assisted explanations, you
-                need to create a free account on{" "}
-                <a
-                  href="https://platform.openai.com"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-blue-500 hover:underline"
-                >
-                  OpenAI
-                </a>{" "}
-                and paste your API key in the settings.
+                To get started, click on the plus sign next to Collections on the left to create a new collection. Then you can start adding cards to it on the right.
               </div>
 
-              <button
-                className="bg-gradient-to-r from-amber-500 to-indigo-500 text-white font-medium py-2 px-2 text-lg rounded flex justify-center"
-                onClick={resetOnboarding}
-              >
+              <button className="bg-gradient-to-r from-amber-500 to-indigo-500 text-white font-medium py-2 px-2 text-lg rounded flex justify-center" onClick={resetOnboarding}>
                 {"Let's go!"}
               </button>
             </div>
